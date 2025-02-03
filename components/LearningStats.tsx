@@ -1,10 +1,18 @@
 import React from 'react';
 import CardWrapper from "@/components/CardWrapper";
+import BadgeWrapper from "@/components/BadgeWrapper";
 
 const LearningStats = () => {
     return (
         <CardWrapper width='w-auto'>
-            <h1>Learning</h1>
+            <div className='flex flex-col items-center gap-2 my-5'>
+                <BadgeWrapper variant='default'>
+                    <h2 className='text-5xl font-bold'>Learned Cards: 55</h2>
+                </BadgeWrapper>
+                <BadgeWrapper variant='secondary'>
+                    <h2 className='text-2xl font-light'>In Progress: 120</h2>
+                </BadgeWrapper>
+            </div>
         </CardWrapper>
     );
 };

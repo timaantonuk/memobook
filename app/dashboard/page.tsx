@@ -2,6 +2,7 @@ import React from 'react';
 import {GoalSetter} from "@/components/GoalSetter";
 import LineChartStat from "@/components/LineChartStat";
 import LearningStats from "@/components/LearningStats";
+import StreakAleart from "@/components/StreakAleart";
 
 const Page = () => {
     return (
@@ -9,6 +10,7 @@ const Page = () => {
             <GoalSetter/>
             <LineChartStat/>
             <LearningStats/>
+            <StreakAleart/>
         </section>
     );
 };
