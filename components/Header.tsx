@@ -2,11 +2,13 @@ import React from 'react';
 import ThemeSwitcher from "@/components/ThemeSwitcher";
 import {FolderHeart} from "lucide-react";
 import {UserAvatar} from "@/components/UserAvatar";
+import TopNavigation from "@/components/TopNavigation";
 
 
 const Header = () => {
     return (
         <header className='flex flex-col justify-center items-center gap-5 main-container relative'>
+            <TopNavigation/>
             <div className='flex gap-5 justify-center items-center'>
                 <h1 className='heading-1 font-extrabold'>MemoBook</h1>
                 <FolderHeart className='w-16 h-16'/>
