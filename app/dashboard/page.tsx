@@ -1,11 +1,15 @@
 import React from 'react';
 import {GoalSetter} from "@/components/GoalSetter";
+import LineChartStat from "@/components/LineChartStat";
+import LearningStats from "@/components/LearningStats";
 
 const Page = () => {
     return (
-        <div>
+        <section className='main-container grid gap-5 grid-cols-2'>
             <GoalSetter/>
-        </div>
+            <LineChartStat/>
+            <LearningStats/>
+        </section>
     );
 };
 
