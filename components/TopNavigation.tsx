@@ -1,3 +1,5 @@
+'use client'
+
 import {
     Breadcrumb,
     BreadcrumbItem,
@@ -9,7 +11,7 @@ import {
 
 const TopNavigation = () => {
     return (
-        <Breadcrumb>
+        <Breadcrumb className='hidden lg:block'>
             <BreadcrumbList>
 
                 <BreadcrumbItem>

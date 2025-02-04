@@ -107,7 +107,7 @@ export function GoalSetter() {
                             <span className="sr-only">Increase</span>
                         </Button>
                     </div>
-                    <div className="my-3 h-[270px]">
+                    <div className="my-3 h-[200px] lg:h-[270px]">
                         <ResponsiveContainer width="100%" height="100%">
                             <BarChart data={data}>
                                 <Bar

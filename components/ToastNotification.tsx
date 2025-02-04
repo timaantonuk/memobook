@@ -9,6 +9,7 @@ export default function ToastNotification() {
     return (
         <Button
             variant="outline"
+            className='mb-5'
             onClick={() => {
                 toast({
                     title: "Goal successfully set.",

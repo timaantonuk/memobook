@@ -7,27 +7,27 @@ import Link from "next/link";
 
 const BottomNavigation = () => {
     return (
-        <div className='flex justify-center mt-5'><Tabs defaultValue="account">
+        <div className='fixed bottom-1 left-[50%] -translate-x-[50%] lg:static lg:translate-x-0 flex justify-center lg:mt-5'><Tabs defaultValue="account">
             <TabsList>
                 <TabsTrigger value="account">
-                    <Link className='flex gap-2 items-center' href='/dashboard'>
+                    <Link className='flex gap-1 items-center' href='/dashboard'>
                         <House/> Home
                     </Link>
                 </TabsTrigger>
 
                 <TabsTrigger value="create">
-                    <Link className='flex gap-2 items-center' href='/create'>
+                    <Link className='flex gap-1 items-center' href='/create'>
                         <BadgePlus/> Create
                     </Link>
                 </TabsTrigger>
                 <TabsTrigger value="learn">
 
-                    <Link className='flex gap-2 items-center' href='/learn'>
+                    <Link className='flex gap-1 items-center' href='/learn'>
                         <GraduationCap/> Learn
                     </Link>
                 </TabsTrigger>
                 <TabsTrigger value="faq">
-                    <Link className='flex gap-2 items-center' href='/faq'>
+                    <Link className='flex gap-1 items-center' href='/faq'>
                         <SearchCheck/>FAQ
                     </Link>
 
