@@ -1,10 +1,10 @@
 "use client"
 
 import * as React from "react"
-import { Minus, Plus } from "lucide-react"
-import { Bar, BarChart, ResponsiveContainer } from "recharts"
+import {Minus, Plus} from "lucide-react"
+import {Bar, BarChart, ResponsiveContainer} from "recharts"
 
-import { Button } from "@/components/ui/button"
+import {Button} from "@/components/ui/button"
 import {
     Drawer,
     DrawerClose,
@@ -110,15 +110,30 @@ export function GoalSetter() {
                     <div className="my-3 h-[200px] lg:h-[270px]">
                         <ResponsiveContainer width="100%" height="100%">
                             <BarChart data={data}>
-                                <Bar
-                                    dataKey="goal"
-                                    style={
-                                        {
-                                            fill: "hsl(var(--primary))",
-                                            opacity: 0.9,
+                                <defs>
+                                    <defs>
+                                        <linearGradient id="barGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+                                            <stop offset="0%" stopColor="#4117af">
+                                                <animate attributeName="stop-color"
+                                                         values="#4117af; #e73c7e; #1fb4e1; #4117af" dur="4s"
+                                                         repeatCount="indefinite"/>
+                                            </stop>
+                                            <stop offset="50%" stopColor="#e73c7e">
+                                                <animate attributeName="stop-color"
+                                                         values="#e73c7e; #1fb4e1; #4117af; #e73c7e" dur="4s"
+                                                         repeatCount="indefinite"/>
+                                            </stop>
+                                            <stop offset="100%" stopColor="#1fb4e1">
+                                                <animate attributeName="stop-color"
+                                                         values="#1fb4e1; #4117af; #e73c7e; #1fb4e1" dur="4s"
+                                                         repeatCount="indefinite"/>
+                                            </stop>
+                                        </linearGradient>
+                                    </defs>
 
-                                        } as React.CSSProperties
-                                    }
+                                </defs>
+                                <Bar
+                                    dataKey="goal" fill="url(#barGradient)" opacity={0.9}
                                 />
                             </BarChart>
                         </ResponsiveContainer>

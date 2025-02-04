@@ -7,8 +7,8 @@ import Link from "next/link";
 
 const BottomNavigation = () => {
     return (
-        <div className='fixed bottom-1 left-[50%] -translate-x-[50%] lg:static lg:translate-x-0 flex justify-center lg:mt-5'><Tabs defaultValue="account">
-            <TabsList>
+        <div className='fixed bottom-1 left-[50%] -translate-x-[50%] lg:fixed lg:left-5 lg:top-[50%] lg:translate-y-[-50%] lg:translate-x-0 flex justify-center lg:mt-5'><Tabs defaultValue="account">
+            <TabsList className='lg:flex lg:flex-col lg:bg-muted lg:h-[25rem] lg:w-auto lg:py-3 px-4 '>
                 <TabsTrigger value="account">
                     <Link className='flex gap-1 items-center' href='/dashboard'>
                         <House/> Home

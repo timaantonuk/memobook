@@ -3,7 +3,7 @@ import {Badge} from "@/components/ui/badge";
 
 const BadgeWrapper = ({children, variant}) => {
     return (
-        <Badge variant={variant}>{children}</Badge>
+        <Badge className='rounded-full' variant={variant}>{children}</Badge>
     );
 };
 

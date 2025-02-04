@@ -121,6 +121,11 @@ body {
   position: relative;
 }
 
+.fileinput::-webkit-file-upload-button {
+    display: none;
+  }
+
+
 .sparkling::before,
 .sparkling::after {
   position: absolute;
@@ -140,6 +145,24 @@ body {
 .sparkling::after {
   background-color: hsl(273, 100%, 50%);
   animation: pointing 1s ease-in-out infinite;
+}
+
+.prime-gradient {
+  background: linear-gradient(-45deg, #4117af, #e73c7e, #230a6e, #1fb4e1);
+  background-size: 400% 400%;
+  animation: gradient 15s ease infinite;
+}
+
+@keyframes gradient {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
 }
 
 @keyframes pointing {
