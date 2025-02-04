@@ -8,13 +8,15 @@ import {Trash} from "lucide-react";
 const Categories = () => {
     return (
 
-        <article>
-            <div className='flex w-[350px] justify-between mb-5'>
-                <h3 className='heading-3'>Categories</h3>
-                <PopoverBtn/>
-            </div>
+        <article className='w-[95%] lg:w-auto'>
 
-            <ScrollArea className="h-full w-[350px] rounded-md border p-4">
+
+            <ScrollArea className="h-full w-full lg:w-[350px] rounded-md border p-4">
+
+                <div className='flex justify-between items-center mb-5'>
+                    <h3 className='heading-3'>Categories</h3>
+                    <PopoverBtn/>
+                </div>
 
                 <div className='flex items-center justify-between mb-2'>
                     <h4 className='text-xl'>Lorem</h4>

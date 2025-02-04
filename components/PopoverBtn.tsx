@@ -12,7 +12,7 @@ export default function PopoverBtn() {
     return (
         <Popover>
             <PopoverTrigger asChild>
-                <Button variant="outline">Create Category</Button>
+                <Button className='h-12' variant="outline">Create Category</Button>
             </PopoverTrigger>
             <PopoverContent className="w-64">
 

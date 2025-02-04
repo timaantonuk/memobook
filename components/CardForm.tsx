@@ -1,65 +1,52 @@
 "use client"
 
-import {zodResolver} from "@hookform/resolvers/zod";
-import {useForm} from "react-hook-form";
-import {z} from "zod"
-
-import {Button} from "@/components/ui/button"
-import {
-    Form,
-    FormControl,
-    FormDescription,
-    FormField,
-    FormItem,
-    FormLabel,
-    FormMessage,
-} from "@/components/ui/form"
-import {Input} from "@/components/ui/input"
-import {Textarea} from "@/components/ui/textarea";
-import {ImageDown} from "lucide-react";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
+import { Button } from "@/components/ui/button";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
 import CardWrapper from "@/components/CardWrapper";
+import dynamic from "next/dynamic";
+import {ImageDown} from "lucide-react";
+
+// Import MDEditor dynamically (to avoid SSR issues)
+const MDEditor = dynamic(() => import("@uiw/react-md-editor"), { ssr: false });
 
 const formSchema = z.object({
-    username: z.string().min(2, {
-        message: "Username must be at least 2 characters.",
-    }),
-})
-
+    username: z.string().min(2, { message: "Username must be at least 2 characters." }),
+    description: z.string().optional(),
+});
 
 const CardForm = () => {
-
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
         defaultValues: {
             username: "",
-            description: '',
+            description: "",
         },
-    })
+    });
 
-    // 2. Define a submit handler.
     function onSubmit(values: z.infer<typeof formSchema>) {
-        // Do something with the form values.
-        // ✅ This will be type-safe and validated.
-        console.log(values)
+        console.log(values);
     }
 
     return (
         <Form {...form}>
-            <CardWrapper width='w-full p-10'>
+            <CardWrapper width="w-[95%] mx-auto py-10 px-4 lg:w-full lg:p-10">
+                <h1 className="heading-1 mb-10">Create Card</h1>
                 <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col gap-5">
                     <FormField
                         control={form.control}
                         name="username"
-                        render={({field}) => (
+                        render={({ field }) => (
                             <FormItem>
                                 <FormLabel>Card Name</FormLabel>
                                 <FormControl>
-                                    <Input className='h-12' placeholder="My first card" {...field} />
+                                    <Input className="h-12" placeholder="My first card" {...field} />
                                 </FormControl>
-                                <FormMessage/>
+                                <FormMessage />
                             </FormItem>
-
-
                         )}
                     />
 
@@ -77,7 +64,7 @@ const CardForm = () => {
                                             {...field}
                                         />
                                         <FormLabel
-                                            className="pl-5 absolute inset-0 flex items-center gap-2 justify-start cursor-grab  text-secondary">
+                                            className="pl-5 absolute inset-0 flex items-center gap-2 justify-start cursor-grab text-accent-foreground opacity-65  ">
                                             <span>Choose File</span>
                                             <ImageDown/>
                                         </FormLabel>
@@ -93,26 +80,24 @@ const CardForm = () => {
                     <FormField
                         control={form.control}
                         name="description"
-                        render={({field}) => (
+                        render={({ field }) => (
                             <FormItem>
                                 <FormLabel>Card Description (optional)</FormLabel>
                                 <FormControl>
-                                    <Textarea className='h-36 resize-none overflow-y-auto'
-                                              placeholder="My first card" {...field} />
+                                    <MDEditor value={field.value} onChange={field.onChange} />
                                 </FormControl>
-                                <FormMessage/>
+                                <FormMessage />
                             </FormItem>
-
-
                         )}
                     />
-                    <Button className='h-12' type="submit">Create</Button>
+
+                    <Button className="h-12" type="submit">
+                        Create
+                    </Button>
                 </form>
-
             </CardWrapper>
-
         </Form>
-    )
-}
+    );
+};
 
 export default CardForm;
