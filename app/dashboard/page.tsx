@@ -6,7 +6,7 @@ import StreakAleart from "@/components/StreakAleart";
 
 const Page = () => {
     return (
-        <section className='main-container grid gap-5 grid-cols-2'>
+        <section className='main-container grid gap-5  grid-cols-2'>
             <GoalSetter/>
             <LineChartStat/>
             <LearningStats/>

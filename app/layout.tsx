@@ -3,6 +3,8 @@ import {Poppins} from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider"
 import Header from "@/components/Header";
+import {Toaster} from "@/components/ui/toaster";
+import BottomNavigation from "@/components/BottomNavigation";
 
 const poppins = Poppins({
     subsets: ["latin"],
@@ -35,6 +37,8 @@ export default function RootLayout({
       >
           <Header/>
           {children}
+          <BottomNavigation/>
+          <Toaster/>
       </ThemeProvider>
       </body>
     </html>

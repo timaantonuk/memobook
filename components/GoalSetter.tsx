@@ -16,6 +16,8 @@ import {
     DrawerTrigger,
 } from "@/components/ui/drawer"
 import CardWrapper from "@/components/CardWrapper";
+import {toast} from "@/hooks/use-toast";
+import ToastNotification from "@/components/ToastNotification";
 
 const data = [
     {
@@ -71,8 +73,8 @@ export function GoalSetter() {
         <CardWrapper width='w-auto'>
             <div className="mx-auto w-full h-full">
                 <DrawerHeader>
-                    <div>Learn Goal</div>
-                    <div>Set your daily learning goal.</div>
+                    <h1 className='reg-text font-bold'>Learn Goal</h1>
+                    <p className='font-light'>Set your daily learning goal.</p>
                 </DrawerHeader>
                 <div className="p-4 pb-0">
                     <div className="flex items-center justify-center space-x-2">
@@ -124,7 +126,7 @@ export function GoalSetter() {
                     </div>
 
                     <footer className='flex flex-col'>
-                        <Button>Set Goal</Button>
+                        <ToastNotification/>
 
                     </footer>
 

@@ -9,9 +9,6 @@ const LearningStats = () => {
                 <BadgeWrapper variant='default'>
                     <h2 className='text-5xl font-bold'>Learned Cards: 55</h2>
                 </BadgeWrapper>
-                <BadgeWrapper variant='secondary'>
-                    <h2 className='text-2xl font-light'>In Progress: 120</h2>
-                </BadgeWrapper>
             </div>
         </CardWrapper>
     );
