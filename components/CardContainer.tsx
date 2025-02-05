@@ -27,14 +27,16 @@ export default function CardContainer() {
 
     return (
         <div>
-            <motion.div className='py-16 relative flex flex-col' style={{...container, background}}>
+            <motion.div
+                className='flex justify-center items-center flex-1 w-full h-full max-w-full rounded-[20px] py-16 relative  flex-col'
+                style={{background}}>
                 <div className='memory-card'></div>
                 <div className='pb-4 flex gap-5 fading-text'>
                     <Undo/> <span>Swipe card</span> <Redo/>
                 </div>
                 <motion.div
-                    className="icon-container flex flex-col gap-5"
-                    style={{...box, x}}
+                    className="lg:w-[60%] w-[90%] h-auto bg-[hsl(262.1_83.3%_57.8%)] rounded-[20px] lg:p-5 py-5 px-2 icon-container flex flex-col gap-5"
+                    style={{x}}
                     drag="x"
                     dragConstraints={{left: 0, right: 0}}
                     dragElastic={0.5}
@@ -81,14 +83,14 @@ export default function CardContainer() {
                         </svg>
                     </motion.div>
                     <img
-                        src='https://safariavventura.com/wp-content/uploads/2018/02/leone-africano-2.jpg'
+                        src='https://www.georgiaaquarium.org/wp-content/uploads/2018/09/whale-shark-8-750x750.jpg'
                         alt='Card image'
                         loading='lazy'
-                        className='pointer-events-none'
+                        className='pointer-events-none w-full lg:max-h-64 object-cover object-center rounded-2xl bg-no-repeat min-w-full min-h-40 max-h-40 lg:min-h-64'
                     />
                     <ReactMarkdown rehypePlugins={[rehypeHighlight]}>{description}</ReactMarkdown>
                     <Separator/>
-                    <footer className='flex justify-between px-5'>
+                    <footer className='flex justify-between px-5 text-xs lg:text-lg'>
                         <p>Category: Languages</p>
                         <p>Will be repeated in 3 days!</p>
                     </footer>
@@ -96,29 +98,6 @@ export default function CardContainer() {
             </motion.div>
         </div>
     )
-}
-
-/**
- * ==============   Styles   ================
- */
-
-const box = {
-    width: '60%',
-    height: 'auto',
-    backgroundColor: 'hsl(262.1 83.3% 57.8%)',
-    borderRadius: 20,
-    padding: 20,
-}
-
-const container: React.CSSProperties = {
-    display: "flex",
-    justifyContent: "center",
-    alignItems: "center",
-    flex: 1,
-    width: '100%',
-    height: '100%',
-    maxWidth: "100%",
-    borderRadius: 20,
 }
 
 const description = `

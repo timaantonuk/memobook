@@ -1,13 +1,12 @@
 import type { Metadata } from "next";
 import {Poppins} from "next/font/google";
-import "./globals.css";
+import "../globals.css";
 import { ThemeProvider } from "@/components/theme-provider"
 import Header from "@/components/Header";
 import {Toaster} from "@/components/ui/toaster";
 import BottomNavigation from "@/components/BottomNavigation";
-import {SidebarProvider, SidebarTrigger} from "@/components/ui/sidebar";
-import AppSidebar from "@/components/app-sidebar";
-import DialogMenu from "@/components/DialogMenu";
+
+
 
 const poppins = Poppins({
     subsets: ["latin"],
@@ -15,7 +14,6 @@ const poppins = Poppins({
     style: ["normal", "italic"],
     variable: "--font-poppins",
 })
-
 
 export const metadata: Metadata = {
   title: "Create Next App",

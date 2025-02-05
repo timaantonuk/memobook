@@ -184,21 +184,30 @@ body {
 }
 
 .memory-card::before {
+  @media screen and (max-width: 768px) {
+    top: 5%;
+    left: 10px;
+    font-size: 1rem;
+  }
   position: absolute;
   content: 'I Forgot';
   font-size: 2rem;
   top: 50%;
   left: 30px;
-  background-color: red;
 }
 
 .memory-card::after {
+  @media screen and (max-width: 768px) {
+    top: 5%;
+    right: 10px;
+    font-size: 1rem;
+  }
   position: absolute;
   content: 'Remember';
   font-size: 2rem;
   top: 50%;
   right: 20px;
-  background-color: red;
+
 }
 
 @keyframes fading {
