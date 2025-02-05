@@ -176,3 +176,46 @@ body {
   }
 }
 
+.fading-text {
+  animation-name: fading;
+  animation-duration: 1s;
+  animation-timing-function: ease-in-out;
+  animation-iteration-count: infinite;
+}
+
+.memory-card::before {
+  position: absolute;
+  content: 'I Forgot';
+  font-size: 2rem;
+  top: 50%;
+  left: 30px;
+  background-color: red;
+}
+
+.memory-card::after {
+  position: absolute;
+  content: 'Remember';
+  font-size: 2rem;
+  top: 50%;
+  right: 20px;
+  background-color: red;
+}
+
+@keyframes fading {
+  0% {
+    opacity: 100%;
+  }
+  50% {
+    opacity: 20%;
+    transform: translateX(10px);
+  }
+
+  75% {
+    transform: translateX(-10px);
+  }
+
+  100% {
+    opacity: 100%;
+  }
+}
+
