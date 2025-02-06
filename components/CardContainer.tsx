@@ -1,14 +1,15 @@
 "use client"
 
-import {motion, useMotionValue, useTransform} from "motion/react"
-import React from "react";
-import ReactMarkdown from "react-markdown";
-import rehypeHighlight from "rehype-highlight";
-import {Redo, Undo} from "lucide-react";
-import {Separator} from "@/components/ui/separator";
-import Image from "next/image";
+import { motion, useMotionValue, useTransform } from "framer-motion"
+import { useState, useEffect } from "react"
+import ReactMarkdown from "react-markdown"
+import rehypeHighlight from "rehype-highlight"
+import { Redo, Undo } from "lucide-react"
+import { Separator } from "@/components/ui/separator"
+import RepeatStepper from "@/components/RepeatStepper";
 
 export default function CardContainer() {
+    const [cardState, setCardState] = useState<"initial" | "learning" | "learned">("initial")
     const x = useMotionValue(0)
     const xInput = [-100, 0, 100]
     const background = useTransform(x, xInput, [
@@ -16,33 +17,52 @@ export default function CardContainer() {
         "linear-gradient(180deg, #7700ff 0%, rgb(26, 0, 96) 100%)",
         "linear-gradient(180deg, rgb(230, 255, 0) 0%, rgb(3, 209, 0) 100%)",
     ])
-    const color = useTransform(x, xInput, [
-        "rgb(211, 9, 225)",
-        "rgb(68, 0, 255)",
-        "rgb(3, 209, 0)",
-    ])
+    const color = useTransform(x, xInput, ["rgb(211, 9, 225)", "rgb(68, 0, 255)", "rgb(3, 209, 0)"])
     const tickPath = useTransform(x, [10, 100], [0, 1])
     const crossPathA = useTransform(x, [-10, -55], [0, 1])
     const crossPathB = useTransform(x, [-50, -100], [0, 1])
 
+    // Add this new function to handle state changes
+    const handleStateChange = (newState: "initial" | "forget" | "remember") => {
+        console.log(`Card state changing from ${cardState} to ${newState}`)
+        setCardState(newState)
+    }
+
+    const handleDragEnd = (event: any, info: any) => {
+        if (info.offset.x > 50) {
+            handleStateChange("remember")
+        } else if (info.offset.x < -50) {
+            handleStateChange("forget")
+        } else {
+            handleStateChange("initial")
+        }
+    }
+
+    useEffect(() => {
+        console.log(`Card state initialized or changed to: ${cardState}`)
+    }, [cardState])
+
     return (
         <div>
             <motion.div
-                className='flex justify-center items-center flex-1 w-full h-full max-w-full rounded-[20px] py-16 relative  flex-col'
-                style={{background}}>
-                <div className='memory-card'></div>
-                <div className='pb-4 flex gap-5 fading-text'>
-                    <Undo/> <span>Swipe card</span> <Redo/>
+                className="flex justify-center items-center flex-1 w-full h-full max-w-full rounded-[20px] py-16 relative flex-col"
+                style={{ background }}
+            >
+                <div className="memory-card"></div>
+                <div className="pb-4 flex gap-5 fading-text">
+                    <Undo /> <span>Swipe card</span> <Redo />
                 </div>
                 <motion.div
                     className="lg:w-[60%] w-[90%] h-auto bg-[hsl(262.1_83.3%_57.8%)] rounded-[20px] lg:p-5 py-5 px-2 icon-container flex flex-col gap-5"
-                    style={{x}}
+                    style={{ x }}
                     drag="x"
-                    dragConstraints={{left: 0, right: 0}}
+                    dragConstraints={{ left: 0, right: 0 }}
                     dragElastic={0.5}
+                    onDragEnd={handleDragEnd}
                 >
-                    <motion.div className='flex gap-5 items-center justify-center'>
-                        <h1 className='heading-1'>Your Card</h1>
+                    <motion.div className="flex gap-5 items-center justify-center relative">
+
+                        <h1 className="heading-1">Your Card</h1>
                         <svg className="progress-icon h-16 w-16" viewBox="0 0 50 50">
                             <motion.path
                                 fill="none"
@@ -61,7 +81,7 @@ export default function CardContainer() {
                                 stroke={color}
                                 d="M14,26 L 22,33 L 35,16"
                                 strokeDasharray="0 1"
-                                style={{pathLength: tickPath}}
+                                style={{ pathLength: tickPath }}
                             />
                             <motion.path
                                 fill="none"
@@ -69,7 +89,7 @@ export default function CardContainer() {
                                 stroke={color}
                                 d="M17,17 L33,33"
                                 strokeDasharray="0 1"
-                                style={{pathLength: crossPathA}}
+                                style={{ pathLength: crossPathA }}
                             />
                             <motion.path
                                 id="cross"
@@ -78,21 +98,25 @@ export default function CardContainer() {
                                 stroke={color}
                                 d="M33,17 L17,33"
                                 strokeDasharray="0 1"
-                                style={{pathLength: crossPathB}}
+                                style={{ pathLength: crossPathB }}
                             />
                         </svg>
                     </motion.div>
                     <img
-                        src='https://d1jyxxz9imt9yb.cloudfront.net/medialib/5080/image/s768x1300/VMIGNONPO1_reduced.jpg'
-                        alt='Card image'
-                        loading='lazy'
-                        className='pointer-events-none w-full lg:max-h-64 object-cover object-center rounded-2xl bg-no-repeat min-w-full min-h-40 max-h-40 lg:min-h-64'
+                        src="https://d1jyxxz9imt9yb.cloudfront.net/medialib/5080/image/s768x1300/VMIGNONPO1_reduced.jpg"
+                        alt="Card image"
+                        loading="lazy"
+                        className="pointer-events-none w-full lg:max-h-64 object-cover object-center rounded-2xl bg-no-repeat min-w-full min-h-40 max-h-40 lg:min-h-64"
                     />
-                    <ReactMarkdown rehypePlugins={[rehypeHighlight]}>{description}</ReactMarkdown>
-                    <Separator/>
-                    <footer className='flex justify-between px-5 text-xs lg:text-lg'>
-                        <p>Category: Languages</p>
-                        <p>Will be repeated in 3 days!</p>
+                    <ReactMarkdown className='justify-self-center' rehypePlugins={[rehypeHighlight]}>{description}</ReactMarkdown>
+                    <Separator />
+                    <footer className="flex justify-between px-5 text-xs lg:text-lg">
+                        <RepeatStepper/>
+                        <div>
+                            <p>Category: Languages</p>
+                            <p className='text-xs text-muted'>Will be repeated at 5 days</p>
+                        </div>
+
                     </footer>
                 </motion.div>
             </motion.div>
@@ -101,17 +125,6 @@ export default function CardContainer() {
 }
 
 const description = `
-# Welcome to My **Markdown Card** 🎉  
-
-This is a test **description** with multiple features:  
-
-## Features 🔥  
-- **Bold** and *italic* text  
-- \`Inline code\` like \`console.log("Hello")\`  
-- Code blocks:  
-
-\`\`\`tsx
-const greeting = "Hello, Markdown!";  
-console.log(greeting);
-
+Как пользоваться приложением? Создайте аккаунт и войдите в него. На главной странице вы можете видеть вашу статистику, стрик дней а также поставить цель по выученным карточкам. Создайте категорию и карточку во вкладке "создать", например "Цитаты из фильмов". Учите карточки на вкладке "учить" с помощью интерактивных свайпов и алгоритма Spaced Repetition. Как пользоваться приложением? Создайте аккаунт и войдите в него. На главной странице вы можете видеть вашу статистику, стрик дней а также поставить цель по выученным карточкам. Создайте категорию и карточку во вкладке "создать", например "Цитаты из фильмов". Учите карточки на вкладке "учить" с помощью интерактивных свайпов и алгоритма Spaced Repetition. 
 `
+

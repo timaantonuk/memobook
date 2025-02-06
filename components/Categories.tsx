@@ -26,8 +26,15 @@ const Categories = () => {
                 </div>
                 <Separator className='mb-2'/>
 
-                <div className='flex items-center justify-between mb-2'>
+                <div className='flex items-center justify-between mb-2 relative'>
                     <h4 className='text-xl'>Lorem</h4>
+
+                    <div className='text-xs text-muted'>
+                        <p>15 Cards total</p>
+                        <Separator/>
+                        <p>5 Cards to review today</p>
+                    </div>
+
                     <Button>
                         <Trash className='w-full h-full'/>
                     </Button>

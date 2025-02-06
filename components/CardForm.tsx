@@ -59,12 +59,14 @@ const CardForm = () => {
                                 <FormControl>
                                     <div className="relative w-full">
                                         <Input
+                                            id='file'
                                             className="h-12 flex items-center pl-20 file:hidden text-transparent w-full"
                                             type="file"
                                             {...field}
                                         />
                                         <FormLabel
-                                            className="pl-5 absolute inset-0 flex items-center gap-2 justify-start cursor-grab text-accent-foreground opacity-65  ">
+                                            htmlFor='file'
+                                            className="pl-5 absolute inset-0 flex items-center gap-2 cursor-cell justify-start text-accent-foreground opacity-65  ">
                                             <span>Choose File</span>
                                             <ImageDown/>
                                         </FormLabel>
