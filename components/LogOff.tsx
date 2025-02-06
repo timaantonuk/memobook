@@ -23,7 +23,9 @@ const LogOff = () => {
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
                 <DropdownMenuItem>
-                    Log out
+                        <Button>
+                            Log out
+                        </Button>
                 </DropdownMenuItem>
             </DropdownMenuContent>
         </DropdownMenu>

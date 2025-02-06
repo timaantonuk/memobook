@@ -13,7 +13,7 @@ export default function CardContainer() {
     const xInput = [-100, 0, 100]
     const background = useTransform(x, xInput, [
         "linear-gradient(180deg, #ff008c 0%, rgb(211, 9, 225) 100%)",
-        "linear-gradient(180deg, #7700ff 0%, rgb(68, 0, 255) 100%)",
+        "linear-gradient(180deg, #7700ff 0%, rgb(26, 0, 96) 100%)",
         "linear-gradient(180deg, rgb(230, 255, 0) 0%, rgb(3, 209, 0) 100%)",
     ])
     const color = useTransform(x, xInput, [
@@ -83,7 +83,7 @@ export default function CardContainer() {
                         </svg>
                     </motion.div>
                     <img
-                        src='https://www.georgiaaquarium.org/wp-content/uploads/2018/09/whale-shark-8-750x750.jpg'
+                        src='https://d1jyxxz9imt9yb.cloudfront.net/medialib/5080/image/s768x1300/VMIGNONPO1_reduced.jpg'
                         alt='Card image'
                         loading='lazy'
                         className='pointer-events-none w-full lg:max-h-64 object-cover object-center rounded-2xl bg-no-repeat min-w-full min-h-40 max-h-40 lg:min-h-64'

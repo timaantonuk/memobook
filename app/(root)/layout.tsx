@@ -5,7 +5,17 @@ import { ThemeProvider } from "@/components/theme-provider"
 import Header from "@/components/Header";
 import {Toaster} from "@/components/ui/toaster";
 import BottomNavigation from "@/components/BottomNavigation";
-
+import {
+    ClerkProvider,
+    SignInButton,
+    SignUpButton,
+    SignedIn,
+    SignedOut,
+    UserButton,
+} from '@clerk/nextjs'
+import React from "react";
+import {User} from "lucide-react";
+import Link from "next/link";
 
 
 const poppins = Poppins({
@@ -26,6 +36,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
+      <ClerkProvider>
     <html lang="en" suppressHydrationWarning>
       <body
         className={`${poppins.variable} ${poppins.variable} antialiased`}
@@ -36,15 +47,13 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
       >
-
-
-              <Header/>
-              {children}
-              <BottomNavigation/>
-
-          <Toaster/>
+                  <Header/>
+                  {children}
+                  <BottomNavigation/>
+                  <Toaster/>
       </ThemeProvider>
       </body>
     </html>
+      </ClerkProvider>
   );
 }

@@ -1,12 +1,17 @@
+'use client'
 import React from 'react';
 import ThemeSwitcher from "@/components/ThemeSwitcher";
-import {FolderHeart} from "lucide-react";
+import {FolderHeart, User} from "lucide-react";
 import {UserAvatar} from "@/components/UserAvatar";
 import TopNavigation from "@/components/TopNavigation";
 import LogOff from "@/components/LogOff";
-
+import {SignedIn, SignedOut, SignInButton, SignUpButton, UserButton} from "@clerk/nextjs";
+import {useSession} from "@clerk/nextjs";
+import {is} from "unist-util-is";
+import Link from "next/link";
 
 const Header = () => {
+    const { isSignedIn } = useSession()
     return (
         <header className='flex flex-col justify-center items-center gap-3 lg:gap-1 main-container relative pb-5 pt-2'>
             <TopNavigation/>
@@ -19,8 +24,12 @@ const Header = () => {
                 <h3 className='heading-3 font-light'>Welcome, Tymofii 👋</h3>
             </div>
 
-            <div className='hidden lg:flex gap-3 absolute top-[30%] right-[25%]'>
-                <LogOff/>
+            <div className='hidden lg:flex items-center gap-3 absolute top-[30%] right-[25%]'>
+
+                {isSignedIn ? '' : <Link href='/dashboard'><User/></Link>}
+                <SignedIn>
+                    <UserButton />
+                </SignedIn>
                 <ThemeSwitcher/>
             </div>
 

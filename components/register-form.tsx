@@ -4,10 +4,15 @@ import { Card, CardContent } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 
+
+
 export default function RegisterForm({
                                       className,
                                       ...props
                                   }: React.ComponentProps<"div">) {
+
+
+
     return (
         <section className='main-container'>
             <div className={cn("flex flex-col gap-6", className)} {...props}>
@@ -52,14 +57,14 @@ export default function RegisterForm({
                                 </div>
                                 <div className="grid gap-2">
                                     <div className="flex items-center">
-                                        <Label htmlFor="password">Repeat password</Label>
+                                        <Label htmlFor="confirm-password">Repeat password</Label>
                                         <a
                                             href="#"
                                             className="ml-auto text-sm underline-offset-2 hover:underline"
                                         >
                                         </a>
                                     </div>
-                                    <Input id="password" type="password" required/>
+                                    <Input id="confirm-password" type="password" required/>
                                 </div>
                                 <Button type="submit" className="w-full">
                                     Register
