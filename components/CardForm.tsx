@@ -52,7 +52,7 @@ const CardForm = () => {
 
                     <FormField
                         control={form.control}
-                        name="photo"
+                        name="description"
                         render={({field}) => (
                             <FormItem>
                                 <FormLabel>Card Photo (optional)</FormLabel>
