@@ -24,11 +24,11 @@ export default function CardContainer() {
     // Add this new function to handle state changes
     const handleStateChange = (newState: "initial" | "forget" | "remember") => {
         console.log(`Card state changing from ${cardState} to ${newState}`)
-        // @ts-ignore
+        // @ts-expect-error
         setCardState(newState)
     }
 
-    const handleDragEnd = (event: any, info: any) => {
+    const handleDragEnd = (info: any) => {
         if (info.offset.x > 50) {
             handleStateChange("remember")
         } else if (info.offset.x < -50) {
