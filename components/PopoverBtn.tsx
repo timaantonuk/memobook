@@ -28,10 +28,10 @@ export default function PopoverBtn() {
                         </div>
                         <div className="flex justify-between gap-2 items-center">
                             <Label htmlFor="icon">Icon:</Label>
-                            <EmojiSelect
-                                id="icon"
-                                placeholder='Category icon:'
-                            />
+                            <div id="icon">
+                                <EmojiSelect/>
+                            </div>
+
                         </div>
 
                         <Button className='h-12'>Create</Button>
