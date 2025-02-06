@@ -9,7 +9,7 @@ import RepeatStepper from "@/components/RepeatStepper";
 import {PanInfo} from "framer-motion";
 
 export default function CardContainer() {
-    const [cardState, setCardState] = useState<"initial" | "learning" | "learned">("initial")
+    const [cardState, setCardState] = useState<"forget" | "remember" | "initial">("initial")
     const x = useMotionValue(0)
     const xInput = [-100, 0, 100]
     const background = useTransform(x, xInput, [
@@ -28,7 +28,7 @@ export default function CardContainer() {
         setCardState(newState)
     }
 
-    const handleDragEnd = (info: PanInfo) => {
+    const handleDragEnd = (_event: MouseEvent | TouchEvent | PointerEvent, info: PanInfo) => {
         if (info.offset.x > 50) {
             handleStateChange("remember")
         } else if (info.offset.x < -50) {

@@ -1,16 +1,13 @@
-import {
-    Card,
-} from "@/components/ui/card"
+import { Card } from "@/components/ui/card"
+import React, { ReactNode } from "react"
 
-import React from 'react';
+interface CardWrapperProps {
+    children: ReactNode
+    width?: string
+}
 
-const CardWrapper = ({children, width}) => {
-    return (
-        <Card className={width}>
-            {children}
-        </Card>
+const CardWrapper: React.FC<CardWrapperProps> = ({ children, width }) => {
+    return <Card className={width}>{children}</Card>
+}
 
-    );
-};
-
-export default CardWrapper;
+export default CardWrapper

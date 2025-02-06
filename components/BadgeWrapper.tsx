@@ -1,9 +1,15 @@
-import React from 'react';
-import {Badge} from "@/components/ui/badge";
+import React, { ReactNode } from 'react';
+import { Badge } from "@/components/ui/badge";
 
-const BadgeWrapper = ({children, variant}) => {
+interface BadgeWrapperProps {
+    children: ReactNode;
+}
+
+const BadgeWrapper: React.FC<BadgeWrapperProps> = ({ children }) => {
     return (
-        <Badge className='rounded-full' variant={variant}>{children}</Badge>
+        <Badge className="rounded-full">
+            {children}
+        </Badge>
     );
 };
 
