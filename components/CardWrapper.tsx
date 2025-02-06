@@ -2,7 +2,7 @@ import {
     Card,
 } from "@/components/ui/card"
 
-import React, {Children} from 'react';
+import React from 'react';
 
 const CardWrapper = ({children, width}) => {
     return (

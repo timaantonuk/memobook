@@ -1,5 +1,4 @@
 "use client"
-
 import { motion, useMotionValue, useTransform } from "framer-motion"
 import { useState, useEffect } from "react"
 import ReactMarkdown from "react-markdown"
@@ -25,6 +24,7 @@ export default function CardContainer() {
     // Add this new function to handle state changes
     const handleStateChange = (newState: "initial" | "forget" | "remember") => {
         console.log(`Card state changing from ${cardState} to ${newState}`)
+        // @ts-ignore
         setCardState(newState)
     }
 
