@@ -6,6 +6,7 @@ import rehypeHighlight from "rehype-highlight"
 import { Redo, Undo } from "lucide-react"
 import { Separator } from "@/components/ui/separator"
 import RepeatStepper from "@/components/RepeatStepper";
+import {PanInfo} from "framer-motion";
 
 export default function CardContainer() {
     const [cardState, setCardState] = useState<"initial" | "learning" | "learned">("initial")
@@ -27,7 +28,7 @@ export default function CardContainer() {
         setCardState(newState)
     }
 
-    const handleDragEnd = (info: any) => {
+    const handleDragEnd = (info: PanInfo) => {
         if (info.offset.x > 50) {
             handleStateChange("remember")
         } else if (info.offset.x < -50) {
