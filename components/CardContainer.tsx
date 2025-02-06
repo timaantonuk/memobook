@@ -24,7 +24,6 @@ export default function CardContainer() {
     // Add this new function to handle state changes
     const handleStateChange = (newState: "initial" | "forget" | "remember") => {
         console.log(`Card state changing from ${cardState} to ${newState}`)
-        // @ts-expect-error
         setCardState(newState)
     }
 
