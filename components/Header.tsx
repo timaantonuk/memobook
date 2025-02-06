@@ -4,10 +4,10 @@ import ThemeSwitcher from "@/components/ThemeSwitcher";
 import {FolderHeart, User} from "lucide-react";
 import {UserAvatar} from "@/components/UserAvatar";
 import TopNavigation from "@/components/TopNavigation";
-import LogOff from "@/components/LogOff";
-import {SignedIn, SignedOut, SignInButton, SignUpButton, UserButton} from "@clerk/nextjs";
+
+import {SignedIn, UserButton} from "@clerk/nextjs";
 import {useSession} from "@clerk/nextjs";
-import {is} from "unist-util-is";
+
 import Link from "next/link";
 
 const Header = () => {
