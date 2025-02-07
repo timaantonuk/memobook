@@ -53,6 +53,10 @@ export const Card: React.FC<CardProps> = ({
         return diffDays <= 0 ? "Today" : `${diffDays} days`;
     }
 
+
+    console.log('category card', category)
+    console.log('nestReview card', nextReview)
+
     return (
         <motion.div
             className="w-full h-auto bg-[hsl(262.1_83.3%_57.8%)] rounded-[20px] lg:p-5 py-5 px-2 icon-container flex flex-col gap-5"

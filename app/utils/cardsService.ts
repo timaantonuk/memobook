@@ -1,6 +1,6 @@
 import {collection, addDoc, getDocs, where, query, doc, deleteDoc, updateDoc} from "firebase/firestore";
 import {db} from "@/app/firebaseConfig";
-import {format, isBefore} from "date-fns";
+import {format, isBefore, isSameDay} from "date-fns";
 
 export interface Card {
     id: string;
@@ -73,29 +73,40 @@ export async function fetchUserCards(userId: string) {
         const today = new Date();
         today.setHours(0, 0, 0, 0);
 
-        const fetchedCards = querySnapshot.docs.map((doc) => {
-            const data = doc.data();
-            const nextReviewDate = data.nextReview ? new Date(data.nextReview) : null;
 
-            return {
-                id: doc.id,
-                title: data.title || "Untitled",
-                description: data.description || "",
-                categoryId: data.categoryId || "",
-                photoUrl: data.photoUrl || "",
-                userId: data.userId || "",
-                createdAt: data.createdAt || new Date().toISOString(),
-                stepOfRepetition: data.stepOfRepetition || 0,
-                status: data.status || "learning",
-                nextReview: nextReviewDate, // ✅ Сохраняем nextReview
-            };
-        });
+        const filteredCards = querySnapshot.docs
+            .map((doc) => {
+                const data = doc.data();
+                return {
+                    id: doc.id,
+                    title: data.title || "Untitled",
+                    description: data.description || "",
+                    categoryId: data.categoryId || "",
+                    photoUrl: data.photoUrl || "",
+                    userId: data.userId || "",
+                    createdAt: data.createdAt || new Date().toISOString(),
+                    stepOfRepetition: data.stepOfRepetition || 0,
+                    status: data.status || "learning",
+                    nextReview: data.nextReview ? new Date(data.nextReview) : null,
+                };
+            })
+            .filter((card) => {
+                console.log(`🔍 Проверяем карточку ${card.id}:`, {
+                    status: card.status,
+                    nextReview: card.nextReview
+                });
 
-        console.log("🔥 Все карточки после загрузки:", fetchedCards);
+                if (card.status === "learned") return false; // ✅ Исключаем выученные карточки
+                if (!card.nextReview) return true; // ✅ Если nextReview не установлен, оставляем карточку
 
-        return fetchedCards; // ✅ Возвращаем все карточки, без фильтрации по дате
+                // ✅ Фильтр: карточки с `nextReview` сегодня или ранее
+                return isSameDay(card.nextReview, today) || isBefore(card.nextReview, today);
+            });
+
+        console.log("🔥 Загруженные карточки после фильтрации:", filteredCards);
+        return filteredCards;
     } catch (error) {
-        console.error("Error fetching user cards:", error);
+        console.error("❌ Ошибка загрузки карточек:", error);
         return [];
     }
 }

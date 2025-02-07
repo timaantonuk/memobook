@@ -34,19 +34,34 @@ const Page = () => {
         const card = cards.find((c) => c.id === cardId);
         if (!card) return;
 
-        let newStep = direction === "right" ? card.stepOfRepetition + 1 : 0;
-        let nextReviewDate = calculateNextReview(newStep); // ✅ Всегда есть дата
+        let updatedCard = { ...card };
 
-        if (newStep > 9) {
-            console.log(`🎉 Карточка ${cardId} полностью выучена!`);
-            updateCard(cardId, { status: "learned", nextReview: nextReviewDate }); // ✅ Без undefined
-            await updateCardInFirebase(cardId, { status: "learned", nextReview: nextReviewDate });
-            removeCard(cardId);
-        } else {
-            console.log(`🔁 Обновляем карточку ${cardId}, следующее повторение: ${nextReviewDate}`);
-            updateCard(cardId, { stepOfRepetition: newStep, nextReview: nextReviewDate });
-            await updateCardInFirebase(cardId, { stepOfRepetition: newStep, nextReview: nextReviewDate });
+        if (direction === "right") {
+            if (card.stepOfRepetition >= 9) {
+                updatedCard.status = "learned";
+                removeCard(cardId);
+            } else {
+                updatedCard.stepOfRepetition += 1;
+                updatedCard.nextReview = calculateNextReview(updatedCard.stepOfRepetition);
+                updateCard(cardId, updatedCard);
+            }
+        } else if (direction === "left") {
+            updatedCard.stepOfRepetition = 0;
+            updatedCard.nextReview = calculateNextReview(0);
+            updateCard(cardId, updatedCard);
         }
+
+        // 🔥 Мгновенно обновляем UI
+        setCards((prevCards) =>
+            prevCards.map((c) => (c.id === cardId ? updatedCard : c))
+        );
+
+        // 🔄 Синхронизируем с Firestore
+        await updateCardInFirebase(cardId, updatedCard);
+
+        // 🔄 Загружаем актуальные карточки
+        const updatedCards = await fetchUserCards(user.id);
+        setCards(updatedCards);
     };
 
     const cards = useCardStore((state)=>state.cards);
