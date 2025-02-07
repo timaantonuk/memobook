@@ -1,10 +1,10 @@
 "use client"
 
 import type React from "react"
-import { useState } from "react"
+import { useState, useMemo } from "react"
 import { motion, useMotionValue, useTransform, useAnimation } from "framer-motion"
 import { Card } from "./Card"
-import {Redo, Undo} from "lucide-react";
+import { Redo, Undo } from "lucide-react"
 
 interface CardData {
     id: string
@@ -12,7 +12,7 @@ interface CardData {
     description: string
     photoUrl?: string
     category: string
-    nextReview: number
+    nextReview: string // Изменено на string (ISO)
 }
 
 interface CardSwipeProps {
@@ -22,6 +22,20 @@ interface CardSwipeProps {
 
 export const CardSwipe: React.FC<CardSwipeProps> = ({ cards, onSwipe }) => {
     const [currentIndex, setCurrentIndex] = useState(0)
+
+    // 🔥 Фильтруем карточки, которые нужно учить сегодня
+    const today = new Date()
+    today.setHours(0, 0, 0, 0)
+
+    const cardsToReview = useMemo(() => {
+        return cards.filter((card) => {
+            if (!card.nextReview) return false
+            const nextReviewDate = new Date(card.nextReview)
+            nextReviewDate.setHours(0, 0, 0, 0)
+            return nextReviewDate.getTime() <= today.getTime()
+        })
+    }, [cards])
+
     const x = useMotionValue(0)
     const xInput = [-100, 0, 100]
     const rotate = useTransform(x, [-200, 200], [-30, 30])
@@ -46,9 +60,9 @@ export const CardSwipe: React.FC<CardSwipeProps> = ({ cards, onSwipe }) => {
         if (Math.abs(swipe) > 100) {
             const direction = swipe > 0 ? "right" : "left"
             await animControls.start({ x: swipe > 0 ? 200 : -200, opacity: 0 })
-            onSwipe(cards[currentIndex].id, direction)
+            onSwipe(cardsToReview[currentIndex].id, direction)
             setCurrentIndex((prevIndex) => prevIndex + 1)
-            if (currentIndex < cards.length - 1) {
+            if (currentIndex < cardsToReview.length - 1) {
                 animControls.set({ x: 0, opacity: 1 })
             }
         } else {
@@ -56,47 +70,46 @@ export const CardSwipe: React.FC<CardSwipeProps> = ({ cards, onSwipe }) => {
         }
     }
 
-    if (cards.length === 0 || currentIndex >= cards.length) {
+    // ✅ Если карточек нет, показываем сообщение 🎉
+    if (cardsToReview.length === 0) {
         return (
-            <div className="flex items-center justify-center h-screen rounded-3xl " style={{background: 'linear-gradient(180deg, #7700ff 0%, rgb(26, 0, 96) 100%)'}}>
-                <div className="text-center text-5xl p-8">No more cards!</div>
+            <div className="flex items-center justify-center h-screen rounded-3xl" style={{ background: 'linear-gradient(180deg, #7700ff 0%, rgb(26, 0, 96) 100%)' }}>
+                <div className="text-center text-5xl p-8">🎉 No cards to review today!</div>
             </div>
         )
     }
 
     return (
         <div className="relative w-full h-screen rounded-3xl flex items-center justify-center overflow-hidden">
-
-
-            <motion.div className="absolute inset-0" style={{background}}/>
+            <motion.div className="absolute inset-0" style={{ background }} />
 
             <div className="memory-card"></div>
-            <div className="absolute top-10 left-[42%]  pb-4 flex gap-5 fading-text">
-                <Undo/> <span>Swipe card</span> <Redo/>
+            <div className="absolute top-10 left-[42%] pb-4 flex gap-5 fading-text">
+                <Undo /> <span>Swipe card</span> <Redo />
             </div>
 
             <motion.div
-                className="absolute flex w-[45rem] justify-center "
-                style={{x, rotate, opacity}}
+                className="absolute flex w-[45rem] justify-center"
+                style={{ x, rotate, opacity }}
                 drag="x"
-                dragConstraints={{left: 0, right: 0}}
+                dragConstraints={{ left: 0, right: 0 }}
                 dragElastic={0.7}
                 onDragEnd={handleDragEnd}
                 animate={animControls}
             >
-
-                {cards.length === 0 || currentIndex >= cards.length ? <div>No more cards</div> :   <Card
-                    {...cards[currentIndex]}
-                    x={x}
-                    color={color}
-                    tickPath={tickPath}
-                    crossPathA={crossPathA}
-                    crossPathB={crossPathB}
-                />}
-
-
+                {cardsToReview.length === 0 || currentIndex >= cardsToReview.length ? (
+                    <div>No more cards</div>
+                ) : (
+                    <Card
+                        {...cardsToReview[currentIndex]}
+                        x={x}
+                        color={color}
+                        tickPath={tickPath}
+                        crossPathA={crossPathA}
+                        crossPathB={crossPathB}
+                    />
+                )}
             </motion.div>
         </div>
     )
 }
-
