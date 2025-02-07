@@ -45,6 +45,14 @@ export const useCardStore = create<CardState>()(
             }));
         },
 
+        updateCard: (id: string, updates: Partial<CardState>) => {
+            set((state) => ({
+                cards: state.cards.map((card) =>
+                    card.id === id ? { ...card, ...updates } : card
+                ),
+            }));
+        },
+
         removeCard: (id) => {
             console.log("🟢 Removing Card ID:", id);
             set((state) => ({

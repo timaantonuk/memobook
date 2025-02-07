@@ -14,6 +14,7 @@ interface CardProps {
     photoUrl?: string
     category: string
     nextReview: number
+    stepOfRepetition: number,
     x: MotionValue<number>
     color: MotionValue<string>
     tickPath: MotionValue<number>
@@ -32,6 +33,7 @@ export const Card: React.FC<CardProps> = ({
                                               tickPath,
                                               crossPathA,
                                               crossPathB,
+                                              stepOfRepetition,
                                           }) => {
     return (
         <motion.div
@@ -99,7 +101,7 @@ export const Card: React.FC<CardProps> = ({
                 <RepeatStepper />
                 <div>
                     <p>Category: {category}</p>
-                    <p className="text-xs text-muted">Will be repeated at {nextReview} days</p>
+                    <p className="text-xs text-muted">Will be repeated at {stepOfRepetition} days</p>
                 </div>
             </footer>
         </motion.div>

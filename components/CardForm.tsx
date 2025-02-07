@@ -47,6 +47,7 @@ const CardForm = () => {
                 title: values.cardTitle,
                 description: values.description,
                 categoryId: values.categoryId, // 🆕 Добавляем ID категории
+                stepOfRepetition: 0,
                 photoUrl,
                 userId: userId, // текущий пользователь
             };
