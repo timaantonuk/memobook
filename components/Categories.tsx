@@ -31,11 +31,6 @@ const CategoriesWithCardsInfo = () => {
 
     // ✅ Мемоизированный расчёт количества карточек
     const { cardsCount, reviewCount } = useMemo(() => {
-        if (!Array.isArray(cards)) {
-            console.warn("🚨 Предупреждение: cards не массив", cards);
-            return { cardsCount: {}, reviewCount: {} };
-        }
-
         const counts: { [key: string]: number } = {};
         const reviewCounts: { [key: string]: number } = {};
 

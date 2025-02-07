@@ -19,31 +19,31 @@ const userState = useUserStore((state)=>state)
     useInitialCategories();
 
 
-    // async function clearFirestoreCollections() {
-    //     try {
-    //         // Очистка коллекции `cards`
-    //         const cardsCollection = collection(db, "cards");
-    //         const cardsSnapshot = await getDocs(cardsCollection);
-    //         cardsSnapshot.forEach(async (card) => {
-    //             await deleteDoc(doc(db, "cards", card.id));
-    //             console.log(`Deleted card: ${card.id}`);
-    //         });
-    //
-    //         // Очистка коллекции `categories`
-    //         const categoriesCollection = collection(db, "categories");
-    //         const categoriesSnapshot = await getDocs(categoriesCollection);
-    //         categoriesSnapshot.forEach(async (category) => {
-    //             await deleteDoc(doc(db, "categories", category.id));
-    //             console.log(`Deleted category: ${category.id}`);
-    //         });
-    //
-    //         console.log("Firestore cleaned successfully!");
-    //     } catch (error) {
-    //         console.error("Error clearing Firestore:", error);
-    //     }
-    // }
-
-// Вызвать функцию
+//     async function clearFirestoreCollections() {
+//         try {
+//             // Очистка коллекции `cards`
+//             const cardsCollection = collection(db, "cards");
+//             const cardsSnapshot = await getDocs(cardsCollection);
+//             cardsSnapshot.forEach(async (card) => {
+//                 await deleteDoc(doc(db, "cards", card.id));
+//                 console.log(`Deleted card: ${card.id}`);
+//             });
+//
+//             // Очистка коллекции `categories`
+//             const categoriesCollection = collection(db, "categories");
+//             const categoriesSnapshot = await getDocs(categoriesCollection);
+//             categoriesSnapshot.forEach(async (category) => {
+//                 await deleteDoc(doc(db, "categories", category.id));
+//                 console.log(`Deleted category: ${category.id}`);
+//             });
+//
+//             console.log("Firestore cleaned successfully!");
+//         } catch (error) {
+//             console.error("Error clearing Firestore:", error);
+//         }
+//     }
+//
+// // Вызвать функцию
 //     clearFirestoreCollections();
 
     return (

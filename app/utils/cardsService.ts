@@ -73,36 +73,29 @@ export async function fetchUserCards(userId: string) {
         const today = new Date();
         today.setHours(0, 0, 0, 0);
 
-        const filteredCards = querySnapshot.docs
-            .map((doc) => {
-                const data = doc.data();
-                return {
-                    id: doc.id,
-                    ...data,
-                    nextReview: data.nextReview ? new Date(data.nextReview) : null,
-                };
-            })
-            .filter((card) => {
-                console.log(`🔍 Проверяем карточку ${card.id}:`, {
-                    nextReview: card.nextReview,
-                    nextReviewTimestamp: card.nextReview ? card.nextReview.getTime() : "null",
-                    todayTimestamp: today.getTime()
-                });
+        const fetchedCards = querySnapshot.docs.map((doc) => {
+            const data = doc.data();
+            const nextReviewDate = data.nextReview ? new Date(data.nextReview) : null;
 
-                if (card.status === "learned") return false; // ✅ Убираем выученные карточки
-                if (!card.nextReview) return true; // ✅ Если нет nextReview, оставляем
+            return {
+                id: doc.id,
+                title: data.title || "Untitled",
+                description: data.description || "",
+                categoryId: data.categoryId || "",
+                photoUrl: data.photoUrl || "",
+                userId: data.userId || "",
+                createdAt: data.createdAt || new Date().toISOString(),
+                stepOfRepetition: data.stepOfRepetition || 0,
+                status: data.status || "learning",
+                nextReview: nextReviewDate, // ✅ Сохраняем nextReview
+            };
+        });
 
-                // ✅ Загружаем, если nextReview сегодня (сравниваем ТОЛЬКО дату, без времени)
-                const nextReviewDate = new Date(card.nextReview);
-                nextReviewDate.setHours(0, 0, 0, 0);
+        console.log("🔥 Все карточки после загрузки:", fetchedCards);
 
-                return nextReviewDate.getTime() <= today.getTime();
-            });
-
-        console.log("🔥 Загруженные карточки после фильтрации:", filteredCards);
-        return filteredCards;
+        return fetchedCards; // ✅ Возвращаем все карточки, без фильтрации по дате
     } catch (error) {
-        console.error("❌ Error fetching user cards:", error);
+        console.error("Error fetching user cards:", error);
         return [];
     }
 }
