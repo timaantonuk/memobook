@@ -191,8 +191,9 @@ body {
   }
   position: absolute;
   content: 'I Forgot';
-  font-size: 2rem;
-  top: 50%;
+  font-size: 1rem;
+  top: 2.5rem;
+  color: rgba(255, 255, 255, 0.38);
   left: 30px;
 }
 
@@ -204,8 +205,9 @@ body {
   }
   position: absolute;
   content: 'Remember';
-  font-size: 2rem;
-  top: 50%;
+  font-size: 1rem;
+  color: rgba(255, 255, 255, 0.38);
+  top: 2.5rem;
   right: 20px;
 
 }

@@ -1,3 +1,4 @@
+'use client'
 import { create } from "zustand";
 import { devtools } from "zustand/middleware";
 import {formatFirestoreTimestamp} from "@/app/utils/formatFirestoreTimestamp";
