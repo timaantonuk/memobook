@@ -9,6 +9,7 @@ import { useCategoryStore } from '@/app/store/categories-store';
 import { useCardStore } from '@/app/store/card-store';
 import { useUserStore } from '@/app/store/user-store';
 import { deleteCategoryAndCards, fetchUserCategories } from "@/app/utils/categoryService";
+import { fetchUserCards } from "@/app/utils/cardsService"; // Импорт функции для загрузки карточек
 
 const CategoriesWithCardsInfo = () => {
     const categories = useCategoryStore((state) => state.categories);
@@ -20,35 +21,38 @@ const CategoriesWithCardsInfo = () => {
 
     const user = useUserStore((state) => state);
 
-    // Загрузка категорий при входе
+    // ✅ Загрузка категорий и карточек при монтировании
     useEffect(() => {
         if (user.id) {
+            // Загружаем категории пользователя
             fetchUserCategories(user.id).then(setCategories);
-        }
-    }, [user.id, setCategories]);
 
-    // Подсчёт карточек
-    const getTotalCards = (categoryId: string) => cards.filter((card) => card.category === categoryId).length;
+            // Загружаем карточки пользователя
+            fetchUserCards(user.id).then(setCards);
+        }
+    }, [user.id, setCategories, setCards]);
+
+    // ✅ Подсчёт карточек в категории
+    const getTotalCards = (categoryId: string) => {
+        return cards.filter((card) => card.categoryId === categoryId).length;
+    };
+
+    // ✅ Подсчёт карточек для повторения
     const getCardsToReviewCount = (categoryId: string) => {
         const today = new Date();
         return cards.filter((card) => {
-            if (card.category !== categoryId) return false;
+            if (card.categoryId !== categoryId) return false;
             if (!card.nextReview) return false;
             return new Date(card.nextReview) <= today;
         }).length;
     };
 
-    // Удаление категории
+    // ✅ Удаление категории
     const handleDeleteCategory = async (categoryId: string) => {
         try {
             await deleteCategoryAndCards(categoryId, user.id); // Удаляем из Firebase
-
             removeCategory(categoryId); // Удаляем категорию из Zustand
-            useCardStore.getState().setCards(
-                useCardStore.getState().cards.filter((card) => card.categoryId !== categoryId)
-            ); // Удаляем связанные карточки из Zustand
-
-            console.log(`✅ Deleted category ${categoryId} and its cards from Zustand`);
+            setCards(cards.filter((card) => card.categoryId !== categoryId)); // Удаляем карточки из Zustand
         } catch (error) {
             console.error("Error deleting category and cards:", error);
         }

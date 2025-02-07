@@ -14,8 +14,8 @@ import {useCardStore} from "@/app/store/card-store";
 import {useUserStore} from "@/app/store/user-store";
 import CategorySelect from "@/components/CategorySelect";
 import {createCard} from "@/app/utils/cardsService";
-import {useUser} from "@clerk/nextjs";
-import {randomUUID} from "node:crypto";
+import { ToastContainer, toast } from 'react-toastify';
+
 
 // Import MDEditor dynamically (to avoid SSR issues)
 const MDEditor = dynamic(() => import("@uiw/react-md-editor"), {ssr: false});
@@ -58,8 +58,10 @@ const CardForm = () => {
             useCardStore.getState().addCard(createdCard);
 
             console.log("🟢 Card successfully created:", createdCard);
+            toast('🦄 Card successfully created!')
         } catch (error) {
             console.error("Error creating card:", error);
+            toast.error(error)
         }
     };
 
