@@ -31,6 +31,11 @@ const CategoriesWithCardsInfo = () => {
 
     // ✅ Мемоизированный расчёт количества карточек
     const { cardsCount, reviewCount } = useMemo(() => {
+        if (!Array.isArray(cards)) {
+            console.warn("🚨 Предупреждение: cards не массив", cards);
+            return { cardsCount: {}, reviewCount: {} };
+        }
+
         const counts: { [key: string]: number } = {};
         const reviewCounts: { [key: string]: number } = {};
 
@@ -62,9 +67,9 @@ const CategoriesWithCardsInfo = () => {
         try {
             await deleteCategoryAndCards(categoryId, user.id);
             removeCategory(categoryId);
-            setCards((prevCards) => prevCards.filter((card) => card.categoryId !== categoryId)); // 🔥 Убираем удалённые карточки из UI
+            useCardStore.getState().removeCardsByCategory(categoryId); // 🔥 Удаляем карточки этой категории
         } catch (error) {
-            console.error('Error deleting category and cards:', error);
+            console.error("❌ Ошибка при удалении категории и карточек:", error);
         }
     };
 
