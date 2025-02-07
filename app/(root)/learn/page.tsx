@@ -15,11 +15,13 @@ const Page = () => {
     const setCards = useCardStore((state)=>state.setCards);
 
     const calculateNextReview = (step: number): string => {
-        const calculateNextReview = (step: number): string => {
-            const intervals = [1, 2, 4, 7, 15, 30];
-            const interval = intervals[Math.min(step, intervals.length - 1)];
-            return formatISO(addDays(new Date(), interval)); // 🔥 Гарантируем корректный формат даты
-        };
+        const intervals = [1, 2, 4, 7, 15, 30]; // Примерные интервалы (в днях)
+        const maxInterval = intervals[intervals.length - 1]; // Последний интервал
+        const interval = step < intervals.length ? intervals[step] : maxInterval; // Если step слишком большой, берем последний интервал
+
+        const nextDate = new Date();
+        nextDate.setDate(nextDate.getDate() + interval);
+        return nextDate.toISOString();
     };
 
     const handleSwipe = async (cardId: string, direction: "left" | "right") => {
@@ -62,7 +64,7 @@ const Page = () => {
     return (
         <section className='main-container flex flex-col items-center lg:items-stretch lg:grid lg:grid-cols-[3fr_1fr] gap-5'>
             <CardSwipe onSwipe={handleSwipeUpdate} cards={cards}/>
-            <Categories/>
+                <Categories/>
         </section>
     );
 };

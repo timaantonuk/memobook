@@ -1,74 +1,58 @@
 "use client";
 import { create } from "zustand";
 import { devtools } from "zustand/middleware";
-import { formatFirestoreTimestamp } from "@/app/utils/formatFirestoreTimestamp";
+import { format } from "date-fns";
 
-// 🟢 Интерфейс для одной карточки
+// Интерфейс карточки
 interface Card {
     id: string;
     title: string;
     description: string;
     categoryId: string;
-    photoUrl?: string;
+    photoUrl: string;
     userId: string;
-    createdAt: string;
-    nextReview: string | null;
-    stepOfRepetition: number;
     status: "learning" | "learned";
+    createdAt: string;
+    stepOfRepetition: number;
+    nextReview: string | null;
 }
 
-// 🟢 Интерфейс для Zustand store
+// Интерфейс Zustand Store
 interface CardState {
     cards: Card[];
     setCards: (cards: Card[]) => void;
-    addCard: (card: Omit<Card, "id" | "createdAt" | "nextReview">) => void;
+    addCard: (card: Card) => void;
     updateCard: (id: string, updates: Partial<Card>) => void;
     removeCard: (id: string) => void;
 }
 
-// 🟢 Zustand Store
 export const useCardStore = create<CardState>()(
     devtools((set, get) => ({
         cards: [],
 
         setCards: (cards) => {
-            set(() => ({
-                cards: cards.map((card) => ({
-                    ...card,
-                    nextReview: formatFirestoreTimestamp(card.nextReview),
-                })),
-            }));
+            set((state) => {
+                if (JSON.stringify(state.cards) === JSON.stringify(cards)) return state;
+                return { cards };
+            });
         },
 
         addCard: (card) => {
             set((state) => ({
-                cards: [
-                    ...state.cards,
-                    {
-                        ...card,
-                        id: crypto.randomUUID(),
-                        createdAt: new Date().toISOString(),
-                        nextReview: new Date().toISOString(),
-                        status: "learning",
-                    },
-                ],
+                cards: [...state.cards, card],
             }));
         },
 
         updateCard: (id: string, updates: Partial<Card>) => {
             set((state) => ({
-                cards: [...state.cards.map((card) =>
-                    card.id === id ? { ...card, ...updates } : card
-                )],
+                cards: state.cards.map((card) => (card.id === id ? { ...card, ...updates } : card)),
             }));
         },
 
-        removeCard: (id) => {
-            console.log("🟢 Removing Card ID:", id);
+        removeCard: (id: string) => {
             set((state) => ({
-                cards: [...state.cards.filter((card) => card.id !== id)],
+                cards: state.cards.filter((card) => card.id !== id),
             }));
         },
-
     }), { name: "Card Store" })
 );

@@ -1,5 +1,5 @@
-'use client'
-import React, { useEffect, useState } from 'react';
+'use client';
+import React, { useEffect, useState, useMemo } from 'react';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import PopoverBtn from '@/components/PopoverBtn';
 import { Separator } from '@/components/ui/separator';
@@ -8,8 +8,8 @@ import { Trash } from 'lucide-react';
 import { useCategoryStore } from '@/app/store/categories-store';
 import { useCardStore } from '@/app/store/card-store';
 import { useUserStore } from '@/app/store/user-store';
-import { deleteCategoryAndCards, fetchUserCategories } from "@/app/utils/categoryService";
-import {createCard, fetchUserCards} from "@/app/utils/cardsService";
+import { deleteCategoryAndCards, fetchUserCategories } from '@/app/utils/categoryService';
+import { createCard, fetchUserCards } from '@/app/utils/cardsService';
 
 const CategoriesWithCardsInfo = () => {
     const categories = useCategoryStore((state) => state.categories);
@@ -21,9 +21,6 @@ const CategoriesWithCardsInfo = () => {
 
     const user = useUserStore((state) => state);
 
-    const [cardsCount, setCardsCount] = useState<{ [key: string]: number }>({});
-    const [reviewCount, setReviewCount] = useState<{ [key: string]: number }>({});
-
     // ✅ Загружаем категории и карточки при монтировании
     useEffect(() => {
         if (user.id) {
@@ -32,65 +29,53 @@ const CategoriesWithCardsInfo = () => {
         }
     }, [user.id]);
 
-    // ✅ Пересчитываем количество карточек в каждой категории
-    useEffect(() => {
-        if (!user.id || categories.length === 0) return;
+    // ✅ Мемоизированный расчёт количества карточек
+    const { cardsCount, reviewCount } = useMemo(() => {
+        const counts: { [key: string]: number } = {};
+        const reviewCounts: { [key: string]: number } = {};
 
-        const calculateCounts = async () => {
-            const allCards = await fetchUserCards(user.id);
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
 
-            const counts: { [key: string]: number } = {};
-            const reviewCounts: { [key: string]: number } = {};
+        cards.forEach((card) => {
+            const categoryId = card.categoryId;
 
-            const today = new Date();
-            today.setHours(0, 0, 0, 0);
+            // 📌 Общие карточки (НЕ изменяется после свайпа)
+            counts[categoryId] = (counts[categoryId] || 0) + 1;
 
-            allCards.forEach((card) => {
-                const categoryId = card.categoryId;
+            // 📌 Карточки на повторение
+            if (card.nextReview) {
+                const nextReviewDate = new Date(card.nextReview);
+                nextReviewDate.setHours(0, 0, 0, 0);
 
-                // 📌 Общие карточки
-                counts[categoryId] = (counts[categoryId] || 0) + 1;
-
-                // 📌 Карточки на повторение
-                if (card.nextReview) {
-                    const nextReviewDate = new Date(card.nextReview);
-                    nextReviewDate.setHours(0, 0, 0, 0);
-
-                    if (nextReviewDate.getTime() <= today.getTime()) {
-                        reviewCounts[categoryId] = (reviewCounts[categoryId] || 0) + 1;
-                    }
+                if (nextReviewDate.getTime() <= today.getTime()) {
+                    reviewCounts[categoryId] = (reviewCounts[categoryId] || 0) + 1;
                 }
-            });
+            }
+        });
 
-            setCardsCount(counts);
-            setReviewCount(reviewCounts);
-        };
+        return { cardsCount: counts, reviewCount: reviewCounts };
+    }, [cards]);
 
-        calculateCounts();
-    }, [categories, user.id]);
-
-    // ✅ Функция удаления категории
-    // ✅ Функция обновления данных
-    const refreshCards = async () => {
-        const updatedCards = await fetchUserCards(user.id);
-        setCards(updatedCards);
-    };
-
-// ✅ Удаление категории
+    // ✅ Удаление категории и карточек в ней
     const handleDeleteCategory = async (categoryId: string) => {
         try {
             await deleteCategoryAndCards(categoryId, user.id);
             removeCategory(categoryId);
-            refreshCards(); // 🔥 Обновляем карточки в UI
+            setCards((prevCards) => prevCards.filter((card) => card.categoryId !== categoryId)); // 🔥 Убираем удалённые карточки из UI
         } catch (error) {
-            console.error("Error deleting category and cards:", error);
+            console.error('Error deleting category and cards:', error);
         }
     };
 
-// ✅ Добавление карточки в UI
+    // ✅ Добавление карточки
     const handleAddCard = async (newCard) => {
-        await createCard(newCard);
-        refreshCards(); // 🔥 Пересчитываем карточки после добавления
+        try {
+            const createdCard = await createCard(newCard);
+            setCards((prevCards) => [...prevCards, createdCard]); // 🔥 Мгновенно добавляем карточку в UI
+        } catch (error) {
+            console.error('Error adding card:', error);
+        }
     };
 
     return (

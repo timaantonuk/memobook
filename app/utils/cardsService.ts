@@ -1,5 +1,6 @@
-import { collection, addDoc, getDocs, where, query, doc, deleteDoc, updateDoc } from "firebase/firestore";
-import { db } from "@/app/firebaseConfig";
+import {collection, addDoc, getDocs, where, query, doc, deleteDoc, updateDoc} from "firebase/firestore";
+import {db} from "@/app/firebaseConfig";
+import {format, isBefore} from "date-fns";
 
 export interface Card {
     id: string;
@@ -14,63 +15,52 @@ export interface Card {
     status: "learning" | "learned";
 }
 
-
-
-// ✅ Создаем новую карточку
-export async function createCard(cardData: {
-    title: string;
-    description: string;
-    stepOfRepetition: 0,
-    categoryId: string;
-    photoUrl?: string;
-    userId: string;
-    status: "learning";
-}) {
+// ✅ Создание карточки
+export async function createCard(cardData: Omit<Card, "id" | "createdAt" | "nextReview">) {
     try {
+        const createdAt = new Date().toISOString();
+        const nextReview = new Date().toISOString();
+
         const docRef = await addDoc(collection(db, "cards"), {
             ...cardData,
-            createdAt: new Date().toISOString(),
-            nextReview: new Date().toISOString(), // Для алгоритма повторения
+            createdAt,
+            nextReview
         });
 
-        return { id: docRef.id, ...cardData };
+        return {id: docRef.id, ...cardData, createdAt, nextReview};
     } catch (error) {
-        console.error("Error creating card:", error);
+        console.error("❌ Error creating card:", error);
         throw error;
     }
 }
 
-// ✅ Удаляем карточку
+// ✅ Удаление карточки
 export async function deleteCard(cardId: string) {
     try {
         await deleteDoc(doc(db, "cards", cardId));
     } catch (error) {
-        console.error("Error deleting card:", error);
+        console.error("❌ Error deleting card:", error);
     }
 }
 
-// ✅ Обновляем карточку
+// ✅ Обновление карточки
 export async function updateCardInFirebase(cardId: string, updates: Partial<Card>) {
     try {
         const cardRef = doc(db, "cards", cardId);
 
-        // 🔥 Фильтруем `undefined`, чтобы Firebase не ругался
-        const filteredUpdates = Object.fromEntries(
-            Object.entries(updates).filter(([_, v]) => v !== undefined)
-        );
-
-        if (filteredUpdates.nextReview) {
-            filteredUpdates.nextReview = new Date(filteredUpdates.nextReview).toISOString(); // ✅ Делаем ISO-строку
+        if (updates.nextReview === undefined) {
+            console.error(`❌ Ошибка: nextReview не может быть undefined. Пропускаем обновление для ${cardId}`);
+            return; // Не обновляем, если nextReview некорректный
         }
 
-        await updateDoc(cardRef, filteredUpdates);
-        console.log("✅ Card updated in Firebase:", filteredUpdates);
+        await updateDoc(cardRef, updates);
+        console.log("✅ Card updated in Firebase:", updates);
     } catch (error) {
         console.error("❌ Error updating card in Firebase:", error);
     }
 }
 
-
+// ✅ Получение карточек пользователя с фильтрацией
 export async function fetchUserCards(userId: string) {
     if (!userId) return [];
 
@@ -81,33 +71,28 @@ export async function fetchUserCards(userId: string) {
         console.log("🔥 Загруженные карточки до фильтрации:", querySnapshot.docs.map(doc => doc.data()));
 
         const today = new Date();
-        today.setHours(0, 0, 0, 0); // Обнуляем часы для корректного сравнения
+        today.setHours(0, 0, 0, 0);
 
         const filteredCards = querySnapshot.docs
             .map((doc) => {
                 const data = doc.data();
-                const nextReviewDate = data.nextReview ? new Date(data.nextReview) : null;
-
                 return {
                     id: doc.id,
-                    title: data.title || "Untitled",
-                    description: data.description || "",
-                    category: data.category || "No Category",
-                    categoryId: data.categoryId || "",
-                    photoUrl: data.photoUrl || "",
-                    userId: data.userId || "",
-                    createdAt: data.createdAt || new Date().toISOString(),
-                    totalRepetitionQuantity: data.totalRepetitionQuantity || 9,
-                    stepOfRepetition: data.stepOfRepetition || 0,
-                    status: data.status || "learning",
-                    nextReview: nextReviewDate, // ✅ Дата `nextReview`
+                    ...data,
+                    nextReview: data.nextReview ? new Date(data.nextReview) : null,
                 };
             })
             .filter((card) => {
+                console.log(`🔍 Проверяем карточку ${card.id}:`, {
+                    nextReview: card.nextReview,
+                    nextReviewTimestamp: card.nextReview ? card.nextReview.getTime() : "null",
+                    todayTimestamp: today.getTime()
+                });
+
                 if (card.status === "learned") return false; // ✅ Убираем выученные карточки
                 if (!card.nextReview) return true; // ✅ Если нет nextReview, оставляем
 
-                // ✅ Исправляем сравнение: сравниваем только ДАТУ
+                // ✅ Загружаем, если nextReview сегодня (сравниваем ТОЛЬКО дату, без времени)
                 const nextReviewDate = new Date(card.nextReview);
                 nextReviewDate.setHours(0, 0, 0, 0);
 
@@ -115,10 +100,9 @@ export async function fetchUserCards(userId: string) {
             });
 
         console.log("🔥 Загруженные карточки после фильтрации:", filteredCards);
-
         return filteredCards;
     } catch (error) {
-        console.error("❌ Ошибка при загрузке карточек:", error);
+        console.error("❌ Error fetching user cards:", error);
         return [];
     }
 }
