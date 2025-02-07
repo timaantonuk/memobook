@@ -1,18 +1,18 @@
-import * as React from "react";
+'use client';
+
 import {
     Select,
     SelectContent,
     SelectGroup,
     SelectItem,
-    SelectLabel,
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select";
 import { useCategoryStore } from "@/app/store/categories-store";
 
 interface CategorySelectProps {
-    value?: string;
-    onValueChange?: (value: string) => void;
+    value?: string; // `categoryId` хранится тут
+    onValueChange: (value: string) => void;
     className?: string;
     placeholder?: string;
 }
@@ -23,21 +23,19 @@ export default function CategorySelect({
                                            className,
                                            placeholder,
                                        }: CategorySelectProps) {
-    const categoriesState = useCategoryStore((state) => state.categories);
-
-    console.log("Categories:", categoriesState);
-
+    const categories = useCategoryStore((state) => state.categories);
 
     return (
         <Select value={value} onValueChange={onValueChange}>
             <SelectTrigger className={className}>
-                <SelectValue placeholder={placeholder || "Select a category"} />
+                <SelectValue placeholder={placeholder || "Select a category"}>
+                    {categories.find((c) => c.id === value)?.name || "Select a category"}
+                </SelectValue>
             </SelectTrigger>
             <SelectContent>
                 <SelectGroup>
-                    <SelectLabel>Categories</SelectLabel>
-                    {categoriesState.map((category) => (
-                        <SelectItem key={category.name} value={category.name}>
+                    {categories.map((category) => (
+                        <SelectItem key={category.id} value={category.id}>
                             {category.name}
                         </SelectItem>
                     ))}

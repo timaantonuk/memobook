@@ -5,8 +5,8 @@ import {useInitialUser} from "@/hooks/use-initial-user";
 import {useInitialCards} from "@/hooks/use-initial-cards";
 import {useInitialCategories} from "@/hooks/use-initial-categories";
 
-import { collection, getDocs, deleteDoc, doc } from "firebase/firestore";
-import { db } from "@/app/firebaseConfig";
+// import { collection, getDocs, deleteDoc, doc } from "firebase/firestore";
+// import { db } from "@/app/firebaseConfig";
 
 export default function Home() {
 

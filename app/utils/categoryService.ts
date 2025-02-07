@@ -1,6 +1,5 @@
-import { collection, addDoc, getDocs, where, query, doc, deleteDoc } from "firebase/firestore";
+import {collection, addDoc, getDocs, where, query, doc, deleteDoc, setDoc} from "firebase/firestore";
 import { db } from "@/app/firebaseConfig";
-import { fetchUserCards, deleteCard } from "./cardsService";
 
 // ✅ Получить категории пользователя
 export async function fetchUserCategories(userId: string) {
@@ -16,10 +15,22 @@ export async function fetchUserCategories(userId: string) {
 }
 
 // ✅ Создать категорию
-export async function createCategory(categoryData) {
+export async function createCategory(categoryData: {
+    name: string;
+    userId: string;
+}) {
     try {
-        const docRef = await addDoc(collection(db, "categories"), categoryData);
-        return { id: docRef.id, ...categoryData };
+        // Создаем уникальный ID для категории
+        const categoryId = crypto.randomUUID();
+
+        // Сохраняем категорию в Firestore
+        const categoryDoc = doc(db, "categories", categoryId);
+        await setDoc(categoryDoc, {
+            ...categoryData,
+            categoryId, // Добавляем categoryId
+        });
+
+        return { id: categoryId, ...categoryData };
     } catch (error) {
         console.error("Error creating category:", error);
         throw error;
@@ -27,30 +38,21 @@ export async function createCategory(categoryData) {
 }
 
 // ✅ Удалить категорию и её карточки
-export async function deleteCategoryAndCards(categoryId: string, userId: string) {
+export const deleteCategoryAndCards = async (categoryId: string, userId: string) => {
     try {
-        // Удаляем карточки, связанные с категорией
-        const cardsCollection = collection(db, "cards");
-        const cardsQuery = query(
-            cardsCollection,
-            where("category", "==", categoryId),
-            where("userId", "==", userId) // Убедимся, что удаляем только карточки текущего пользователя
-        );
+        // Удаляем все карточки с categoryId
+        const cardsRef = collection(db, "cards");
+        const q = query(cardsRef, where("categoryId", "==", categoryId), where("userId", "==", userId));
+        const querySnapshot = await getDocs(q);
 
-        const cardsSnapshot = await getDocs(cardsQuery);
-        const batchDeletes = cardsSnapshot.docs.map(async (docSnapshot) => {
-            await deleteDoc(doc(db, "cards", docSnapshot.id));
-            console.log(`Deleted card: ${docSnapshot.id}`);
-        });
+        const deletePromises = querySnapshot.docs.map((doc) => deleteDoc(doc.ref));
+        await Promise.all(deletePromises);
 
-        await Promise.all(batchDeletes);
-
-        // Удаляем категорию из Firestore
         const categoryDoc = doc(db, "categories", categoryId);
         await deleteDoc(categoryDoc);
-        console.log(`Deleted category: ${categoryId}`);
+
+        console.log(`✅ Category ${categoryId} and related cards deleted.`);
     } catch (error) {
-        console.error("Error deleting category and related cards:", error);
-        throw error;
+        console.error("❌ Error deleting category and cards:", error);
     }
-}
+};

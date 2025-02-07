@@ -11,6 +11,8 @@ export async function fetchUserCards(userId: string) {
         return querySnapshot.docs.map((doc) => ({
             id: doc.id,
             ...doc.data(),
+            // 🛠 Если данные возвращаются в неправильном формате, можно добавлять проверки
+            categoryId: doc.data().categoryId || null,
         }));
     } catch (error) {
         console.error("Error fetching user cards:", error);
@@ -18,9 +20,21 @@ export async function fetchUserCards(userId: string) {
     }
 }
 
-export async function createCard(cardData) {
+export async function createCard(cardData: {
+    title: string;
+    description: string;
+    categoryId: string;
+    photoUrl?: string;
+    userId: string;
+    status: "learning";
+}) {
     try {
-        const docRef = await addDoc(collection(db, "cards"), cardData);
+        const docRef = await addDoc(collection(db, "cards"), {
+            ...cardData,
+            createdAt: new Date().toISOString(),
+            nextReview: new Date().toISOString(), // Для алгоритма повторения
+        });
+
         return { id: docRef.id, ...cardData };
     } catch (error) {
         console.error("Error creating card:", error);

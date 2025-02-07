@@ -15,6 +15,7 @@ import {useUserStore} from "@/app/store/user-store";
 import CategorySelect from "@/components/CategorySelect";
 import {createCard} from "@/app/utils/cardsService";
 import {useUser} from "@clerk/nextjs";
+import {randomUUID} from "node:crypto";
 
 // Import MDEditor dynamically (to avoid SSR issues)
 const MDEditor = dynamic(() => import("@uiw/react-md-editor"), {ssr: false});
@@ -22,7 +23,7 @@ const MDEditor = dynamic(() => import("@uiw/react-md-editor"), {ssr: false});
 const formSchema = z.object({
     cardTitle: z.string().min(2, {message: "Username must be at least 2 characters."}),
     description: z.string().optional(),
-    category: z.string().min(1, { message: "Category is required." }),
+    categoryId: z.string().min(1, { message: "Category is required." }), // 🆕 categoryId вместо category
     photo: z.instanceof(File).optional(), // Отдельное поле для файла
 
 });
@@ -34,46 +35,34 @@ const CardForm = () => {
         defaultValues: {
             cardTitle: "",
             description: "",
-            category: "",
+            categoryId: "",
             photo: undefined, // Отдельное поле для файла
         },
     });
     const handleCreateCard = async (file: File, values: any) => {
         try {
-            // Загружаем фото, если файл передан
             const photoUrl = file ? await uploadToCloudinary(file) : "";
 
-            // Формируем данные карточки для Firebase
             const cardData = {
                 title: values.cardTitle,
                 description: values.description,
-                category: values.category,
+                categoryId: values.categoryId, // 🆕 Добавляем ID категории
                 photoUrl,
-                userId: userId,
+                userId: userId, // текущий пользователь
             };
 
-            console.log("🎯 Созданная карточка:", {
-                title: values.cardTitle,
-                category: values.category, // Вот это важно!
-                userId: userId,
-            });
-
-            // Создаем карточку в Firebase
+            // Создаём карточку в Firebase
             const createdCard = await createCard(cardData);
 
-            // Обновляем Zustand store, добавляя созданную карточку
+            // Добавляем её в Zustand
             useCardStore.getState().addCard(createdCard);
 
-            console.log("Card created in Firebase and pushed to store", createdCard);
-            console.log("Current card state", useCardStore.getState());
-            console.log("User state", useUserStore.getState());
+            console.log("🟢 Card successfully created:", createdCard);
         } catch (error) {
-            console.error("Error creating card", error);
-            throw error;
+            console.error("Error creating card:", error);
         }
-
-
     };
+
     function onSubmit(values: z.infer<typeof formSchema>) {
         handleCreateCard(values.photo, values).then(() => console.log("Card creation completed")
         )
@@ -101,15 +90,14 @@ const CardForm = () => {
 
                     <FormField
                         control={form.control}
-                        name="category"
-                        render={({field}) => (
+                        name="categoryId" // 🆕 Здесь будет сохраняться `categoryId`
+                        render={({ field }) => (
                             <FormItem>
                                 <FormLabel>Category</FormLabel>
                                 <FormControl>
-                                    <CategorySelect className="h-12" placeholder="New category" {...field} value={field.value}
-                                                    onValueChange={field.onChange} />
+                                    <CategorySelect value={field.value} onValueChange={field.onChange} />
                                 </FormControl>
-                                <FormMessage/>
+                                <FormMessage />
                             </FormItem>
                         )}
                     />

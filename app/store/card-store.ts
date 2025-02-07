@@ -2,25 +2,15 @@ import { create } from "zustand";
 import { devtools } from "zustand/middleware";
 import {formatFirestoreTimestamp} from "@/app/utils/formatFirestoreTimestamp";
 
-interface Card {
-    id: string;
+
+interface CardState {
     title: string;
     description: string;
     category: string;
+    categoryId: string; // 🆕 Добавлено поле categoryId
     photoUrl: string;
     userId: string;
-    createdAt: string;
-    totalRepetitionQuantity: number;
-    stepOfRepetition: number;
-    nextReview: string | null;
-    status: "learning" | "learned"; // 🆕 Добавляем статус карточки
-}
-
-interface CardState {
-    cards: Card[];
-    setCards: (cards: Card[]) => void;
-    addCard: (card: Omit<Card, 'id' | 'createdAt' | 'nextReview' | 'stepOfRepetition' | 'totalRepetitionQuantity'>) => void;
-    removeCard: (id: string) => void;
+    status?: "learning" | "learned"; // по умолчанию learning
 }
 
 export const useCardStore = create<CardState>()(
@@ -48,6 +38,7 @@ export const useCardStore = create<CardState>()(
                         stepOfRepetition: 0,
                         nextReview: new Date().toISOString(),
                         status: "learning", // 🆕 Все новые карточки по умолчанию "learning"
+                        categoryId: card.categoryId, // 🆕 Добавляем categoryId
                     },
                 ],
             }));
