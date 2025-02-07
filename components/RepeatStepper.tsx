@@ -1,39 +1,34 @@
-const steps = [
-    { name: 'Repeat 1', href: '#', status: 'complete' },
-    { name: 'Repeat 2', href: '#', status: 'current' },
-    { name: 'Repeat 3', href: '#', status: 'upcoming' },
-    { name: 'Repeat 4', href: '#', status: 'upcoming' },
-]
+export default function StepperOfRepetition({ step }: { step: number }) {
+    const totalSteps = 9; // Общее количество повторений
+    const normalizedStep = Math.min(step + 1, totalSteps); // Чтобы 0 отображался как 1
+    const steps = Array.from({ length: totalSteps }, (_, index) => index + 1);
 
-export default function RepeatStepper() {
     return (
         <nav aria-label="Progress" className="flex items-center justify-center">
-            <p className=" font-medium">
-                Repeat {steps.findIndex((step) => step.status === 'current') + 1} of {steps.length}
+            <p className="font-medium">
+                Repeat {normalizedStep} of {totalSteps}
             </p>
-            <ol role="list" className="ml-8 flex items-center space-x-5">
-                {steps.map((step) => (
-                    <li key={step.name}>
-                        {step.status === 'complete' ? (
-                            <a href={step.href} className="block size-2.5 rounded-full bg-violet-950 hover:bg-muted">
-                                <span className="sr-only">{step.name}</span>
-                            </a>
-                        ) : step.status === 'current' ? (
-                            <a href={step.href} aria-current="step" className="relative flex items-center justify-center">
-                <span aria-hidden="true" className="absolute flex size-5 p-px">
-                  <span className="size-full rounded-full bg-blue-700 opacity-20" />
-                </span>
-                                <span aria-hidden="true" className="relative block size-2.5 rounded-full bg-violet-950 " />
-                                <span className="sr-only">{step.name}</span>
-                            </a>
+            <ol role="list" className="ml-8 flex items-center space-x-3">
+                {steps.map((num) => (
+                    <li key={num}>
+                        {num < normalizedStep ? (
+                            // Пройденные шаги (фиолетовые)
+                            <span className="block size-2.5 rounded-full bg-violet-950" />
+                        ) : num === normalizedStep ? (
+                            // Текущий шаг (подсвеченный)
+                            <span className="relative flex items-center justify-center">
+                                <span aria-hidden="true" className="absolute flex size-5 p-px">
+                                    <span className="size-full rounded-full bg-blue-700 opacity-20" />
+                                </span>
+                                <span aria-hidden="true" className="relative block size-2.5 rounded-full bg-violet-950" />
+                            </span>
                         ) : (
-                            <a href={step.href} className="block size-2.5 rounded-full bg-gray-200 hover:bg-gray-400">
-                                <span className="sr-only">{step.name}</span>
-                            </a>
+                            // Оставшиеся шаги (серые)
+                            <span className="block size-2.5 rounded-full bg-gray-200" />
                         )}
                     </li>
                 ))}
             </ol>
         </nav>
-    )
+    );
 }

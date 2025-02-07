@@ -1,38 +1,22 @@
-import {collection, addDoc, getDocs, where, query, doc, deleteDoc, updateDoc} from "firebase/firestore";
+import { collection, addDoc, getDocs, where, query, doc, deleteDoc, updateDoc } from "firebase/firestore";
 import { db } from "@/app/firebaseConfig";
 
 export interface Card {
-    id: string; // Уникальный идентификатор карточки
-    title: string; // Заголовок карточки
-    description: string; // Описание карточки
-    categoryId: string; // ID категории, к которой принадлежит карточка
-    photoUrl?: string; // Ссылка на изображение карточки
-    userId: string; // ID пользователя, которому принадлежит карточка
-    createdAt: string; // Дата создания карточки
-    nextReview: string; // Дата следующего повторения
-    stepOfRepetition: number; // Текущий шаг алгоритма Spaced Repetition
-    status: "learning" | "learned"; // Статус карточки
+    id: string;
+    title: string;
+    description: string;
+    categoryId: string;
+    photoUrl?: string;
+    userId: string;
+    createdAt: string;
+    nextReview: string;
+    stepOfRepetition: number;
+    status: "learning" | "learned";
 }
 
-export async function fetchUserCards(userId: string) {
-    if (!userId) return [];
 
-    try {
-        const q = query(collection(db, "cards"), where("userId", "==", userId));
-        const querySnapshot = await getDocs(q);
 
-        return querySnapshot.docs.map((doc) => ({
-            id: doc.id,
-            ...doc.data(),
-            // 🛠 Если данные возвращаются в неправильном формате, можно добавлять проверки
-            categoryId: doc.data().categoryId || null,
-        }));
-    } catch (error) {
-        console.error("Error fetching user cards:", error);
-        return [];
-    }
-}
-
+// ✅ Создаем новую карточку
 export async function createCard(cardData: {
     title: string;
     description: string;
@@ -56,6 +40,7 @@ export async function createCard(cardData: {
     }
 }
 
+// ✅ Удаляем карточку
 export async function deleteCard(cardId: string) {
     try {
         await deleteDoc(doc(db, "cards", cardId));
@@ -64,12 +49,76 @@ export async function deleteCard(cardId: string) {
     }
 }
 
+// ✅ Обновляем карточку
 export async function updateCardInFirebase(cardId: string, updates: Partial<Card>) {
     try {
         const cardRef = doc(db, "cards", cardId);
-        await updateDoc(cardRef, updates);
-        console.log("Card updated in Firebase:", updates);
+
+        // 🔥 Фильтруем `undefined`, чтобы Firebase не ругался
+        const filteredUpdates = Object.fromEntries(
+            Object.entries(updates).filter(([_, v]) => v !== undefined)
+        );
+
+        if (filteredUpdates.nextReview) {
+            filteredUpdates.nextReview = new Date(filteredUpdates.nextReview).toISOString(); // ✅ Делаем ISO-строку
+        }
+
+        await updateDoc(cardRef, filteredUpdates);
+        console.log("✅ Card updated in Firebase:", filteredUpdates);
     } catch (error) {
-        console.error("Error updating card in Firebase:", error);
+        console.error("❌ Error updating card in Firebase:", error);
+    }
+}
+
+
+export async function fetchUserCards(userId: string) {
+    if (!userId) return [];
+
+    try {
+        const q = query(collection(db, "cards"), where("userId", "==", userId));
+        const querySnapshot = await getDocs(q);
+
+        console.log("🔥 Загруженные карточки до фильтрации:", querySnapshot.docs.map(doc => doc.data()));
+
+        const today = new Date();
+        today.setHours(0, 0, 0, 0); // Обнуляем часы для корректного сравнения
+
+        const filteredCards = querySnapshot.docs
+            .map((doc) => {
+                const data = doc.data();
+                const nextReviewDate = data.nextReview ? new Date(data.nextReview) : null;
+
+                return {
+                    id: doc.id,
+                    title: data.title || "Untitled",
+                    description: data.description || "",
+                    category: data.category || "No Category",
+                    categoryId: data.categoryId || "",
+                    photoUrl: data.photoUrl || "",
+                    userId: data.userId || "",
+                    createdAt: data.createdAt || new Date().toISOString(),
+                    totalRepetitionQuantity: data.totalRepetitionQuantity || 9,
+                    stepOfRepetition: data.stepOfRepetition || 0,
+                    status: data.status || "learning",
+                    nextReview: nextReviewDate, // ✅ Дата `nextReview`
+                };
+            })
+            .filter((card) => {
+                if (card.status === "learned") return false; // ✅ Убираем выученные карточки
+                if (!card.nextReview) return true; // ✅ Если нет nextReview, оставляем
+
+                // ✅ Исправляем сравнение: сравниваем только ДАТУ
+                const nextReviewDate = new Date(card.nextReview);
+                nextReviewDate.setHours(0, 0, 0, 0);
+
+                return nextReviewDate.getTime() <= today.getTime();
+            });
+
+        console.log("🔥 Загруженные карточки после фильтрации:", filteredCards);
+
+        return filteredCards;
+    } catch (error) {
+        console.error("❌ Ошибка при загрузке карточек:", error);
+        return [];
     }
 }

@@ -6,6 +6,7 @@ import { Separator } from "@/components/ui/separator"
 import ReactMarkdown from "react-markdown"
 import rehypeHighlight from "rehype-highlight"
 import { RepeatStepper } from "./RepeatStepper"
+import StepperOfRepetition from "@/components/RepeatStepper";
 
 interface CardProps {
     id: string
@@ -13,7 +14,7 @@ interface CardProps {
     description: string
     photoUrl?: string
     category: string
-    nextReview: number
+    nextReview: string
     stepOfRepetition: number,
     x: MotionValue<number>
     color: MotionValue<string>
@@ -34,7 +35,24 @@ export const Card: React.FC<CardProps> = ({
                                               crossPathA,
                                               crossPathB,
                                               stepOfRepetition,
-                                          }) => {
+                                          }) =>
+
+{
+
+
+    const getDaysUntilNextReview = (nextReview: string | null) => {
+        if (!nextReview) return "Never"; // Если повтор не запланирован
+        const nextDate = new Date(nextReview);
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        nextDate.setHours(0, 0, 0, 0);
+
+        const diffTime = nextDate.getTime() - today.getTime();
+        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+        return diffDays <= 0 ? "Today" : `${diffDays} days`;
+    }
+
     return (
         <motion.div
             className="w-full h-auto bg-[hsl(262.1_83.3%_57.8%)] rounded-[20px] lg:p-5 py-5 px-2 icon-container flex flex-col gap-5"
@@ -98,10 +116,10 @@ export const Card: React.FC<CardProps> = ({
             </ReactMarkdown>
             <Separator />
             <footer className="flex justify-between px-5 text-xs lg:text-lg">
-                <RepeatStepper />
+                    <StepperOfRepetition step={stepOfRepetition}/>
                 <div>
                     <p>Category: {category}</p>
-                    <p className="text-xs text-muted">Will be repeated at {stepOfRepetition} days</p>
+                    <p className="text-xs text-muted">Will be repeated at {getDaysUntilNextReview(nextReview)} days</p>
                 </div>
             </footer>
         </motion.div>
