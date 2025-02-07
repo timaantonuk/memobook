@@ -7,6 +7,7 @@ import {
     ClerkProvider,
 } from '@clerk/nextjs'
 import React from "react";
+import UserProvider from "@/components/UserProvider";
 
 
 
@@ -33,6 +34,7 @@ export default function RootLayout({
       <body
         className={`${poppins.variable} ${poppins.variable} antialiased`}
       >
+      <UserProvider/>
       <ThemeProvider
           attribute="class"
           defaultTheme="dark"
