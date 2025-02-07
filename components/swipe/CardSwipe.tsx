@@ -5,14 +5,16 @@ import { useState, useMemo } from "react"
 import { motion, useMotionValue, useTransform, useAnimation } from "framer-motion"
 import { Card } from "./Card"
 import { Redo, Undo } from "lucide-react"
+import { useCategoryStore } from "@/app/store/categories-store" // ✅ Получаем категории
 
 interface CardData {
     id: string
     title: string
     description: string
     photoUrl?: string
-    category: string
-    nextReview: string // Изменено на string (ISO)
+    categoryId: string // ✅ Изменено на `categoryId`
+    nextReview: string
+    stepOfRepetition: number
 }
 
 interface CardSwipeProps {
@@ -21,6 +23,7 @@ interface CardSwipeProps {
 }
 
 export const CardSwipe: React.FC<CardSwipeProps> = ({ cards, onSwipe }) => {
+    const categories = useCategoryStore((state) => state.categories) // ✅ Получаем категории
     const [currentIndex, setCurrentIndex] = useState(0)
 
     // 🔥 Фильтруем карточки, которые нужно учить сегодня
@@ -57,7 +60,8 @@ export const CardSwipe: React.FC<CardSwipeProps> = ({ cards, onSwipe }) => {
         info: { offset: { x: number; y: number }; velocity: { x: number; y: number } },
     ) => {
         const swipe = info.offset.x
-        if (Math.abs(swipe) > 100) {
+
+        if (Math.abs(swipe) > 100 && currentIndex < cardsToReview.length) {
             const direction = swipe > 0 ? "right" : "left"
             await animControls.start({ x: swipe > 0 ? 200 : -200, opacity: 0 })
             onSwipe(cardsToReview[currentIndex].id, direction)
@@ -97,11 +101,12 @@ export const CardSwipe: React.FC<CardSwipeProps> = ({ cards, onSwipe }) => {
                 onDragEnd={handleDragEnd}
                 animate={animControls}
             >
-                {cardsToReview.length === 0 || currentIndex >= cardsToReview.length ? (
+                {currentIndex >= cardsToReview.length ? (
                     <div>No more cards</div>
                 ) : (
                     <Card
                         {...cardsToReview[currentIndex]}
+                        category={categories.find((c) => c.id === cardsToReview[currentIndex].categoryId)?.name || "Unknown"} // ✅ Теперь передаём имя категории
                         x={x}
                         color={color}
                         tickPath={tickPath}
