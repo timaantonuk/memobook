@@ -15,12 +15,18 @@ const Page = () => {
     const setCards = useCardStore((state)=>state.setCards);
 
     const calculateNextReview = (step: number): string => {
-        const intervals = [1, 2, 4, 7, 15, 30]; // Примерные интервалы (в днях)
-        const maxInterval = intervals[intervals.length - 1]; // Последний интервал
-        const interval = step < intervals.length ? intervals[step] : maxInterval; // Если step слишком большой, берем последний интервал
+        const intervals = [1, 2, 4, 7, 15, 30]; // Дни между повторениями
+        const maxStep = intervals.length - 1;
 
+        if (step > maxStep) {
+            console.warn(`🎓 Карточка полностью выучена! step=${step}`);
+            return new Date().toISOString(); // ✅ Возвращаем текущую дату, чтобы не было undefined
+        }
+
+        const interval = intervals[Math.min(step, maxStep)];
         const nextDate = new Date();
         nextDate.setDate(nextDate.getDate() + interval);
+
         return nextDate.toISOString();
     };
 
@@ -28,30 +34,19 @@ const Page = () => {
         const card = cards.find((c) => c.id === cardId);
         if (!card) return;
 
-        if (direction === "right") {
-            if (card.stepOfRepetition >= 9) {
-                // ✅ Карточка выучена → удаляем из стейта и базы
-                updateCard(cardId, { status: "learned" });
-                await updateCardInFirebase(cardId, { status: "learned" });
-                removeCard(cardId);
-            } else {
-                // ✅ Увеличиваем шаг и ставим новую дату повторения
-                const nextReviewDate = calculateNextReview(card.stepOfRepetition + 1);
-                updateCard(cardId, {
-                    stepOfRepetition: card.stepOfRepetition + 1,
-                    nextReview: nextReviewDate,
-                });
-                await updateCardInFirebase(cardId, {
-                    stepOfRepetition: card.stepOfRepetition + 1,
-                    nextReview: nextReviewDate,
-                });
-            }
-        } else if (direction === "left") {
-            // ✅ Сбрасываем шаг и начинаем сначала
-            updateCard(cardId, { stepOfRepetition: 0, nextReview: calculateNextReview(0) });
-            await updateCardInFirebase(cardId, { stepOfRepetition: 0, nextReview: calculateNextReview(0) });
-        }
+        let newStep = direction === "right" ? card.stepOfRepetition + 1 : 0;
+        let nextReviewDate = calculateNextReview(newStep); // ✅ Всегда есть дата
 
+        if (newStep > 9) {
+            console.log(`🎉 Карточка ${cardId} полностью выучена!`);
+            updateCard(cardId, { status: "learned", nextReview: nextReviewDate }); // ✅ Без undefined
+            await updateCardInFirebase(cardId, { status: "learned", nextReview: nextReviewDate });
+            removeCard(cardId);
+        } else {
+            console.log(`🔁 Обновляем карточку ${cardId}, следующее повторение: ${nextReviewDate}`);
+            updateCard(cardId, { stepOfRepetition: newStep, nextReview: nextReviewDate });
+            await updateCardInFirebase(cardId, { stepOfRepetition: newStep, nextReview: nextReviewDate });
+        }
     };
 
     const cards = useCardStore((state)=>state.cards);
