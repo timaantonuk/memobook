@@ -115,20 +115,22 @@ const CardForm = () => {
                                 <FormControl>
                                     <div className="relative w-full">
                                         <Input
-                                            id='file'
-                                            className="h-12 flex items-center pl-20 file:hidden text-accent-foreground w-full"
+                                            id="file"
+                                            className="h-12 pt-3 file:hidden cursor-pointer text-accent-foreground w-full hover:bg-accent/50 transition-colors"
                                             type="file"
-                                            onChange={(e) => field.onChange(e.target.files?.[0])} // Обновляем state только файлом
+                                            onChange={(e) => field.onChange(e.target.files?.[0])}
+                                            accept="image/*"
                                         />
-                                        <FormLabel
-                                            htmlFor='file'
-                                            className="pl-5 absolute inset-0 flex items-center gap-2 cursor-pointer justify-start opacity-65">
-                                            <span>Choose File</span>
-                                            <ImageDown/>
-                                        </FormLabel>
+                                        {/*<FormLabel*/}
+                                        {/*    htmlFor="file"*/}
+                                        {/*    className="pl-5 absolute inset-0 flex items-center gap-2 cursor-pointer justify-start text-muted-foreground hover:text-accent-foreground transition-colors"*/}
+                                        {/*>*/}
+                                        {/*    <ImageDown className="h-5 w-5" />*/}
+                                        {/*    <span>Choose File</span>*/}
+                                        {/*</FormLabel>*/}
                                     </div>
                                 </FormControl>
-                                <FormMessage/>
+                                <FormMessage />
                             </FormItem>
                         )}
                     />
