@@ -2,6 +2,8 @@
 import { create } from "zustand"
 import { devtools } from "zustand/middleware"
 import { useCategoryStore } from "./categories-store"
+import { updateTotalLearningCards, addDailyLearningCards, fetchUserStats } from "@/app/utils/userStatsService"
+import { useUserStore } from "./user-store"
 
 interface Card {
     id: string
@@ -38,6 +40,10 @@ export const useCardStore = create<CardState>()(
             const selectedCategoryId = get().selectedCategoryId
             const filtered = selectedCategoryId ? cards.filter((card) => card.categoryId === selectedCategoryId) : cards
 
+            const learningCards = cards.filter((c) => c.status === "learning")
+            const userId = useUserStore.getState().id
+            updateTotalLearningCards(userId, learningCards.length)
+
             set({
                 cards,
                 filteredCards: filtered,
@@ -50,6 +56,11 @@ export const useCardStore = create<CardState>()(
                 const filtered = state.selectedCategoryId
                     ? updatedCards.filter((c) => c.categoryId === state.selectedCategoryId)
                     : updatedCards
+
+                const learningCards = updatedCards.filter((c) => c.status === "learning")
+                const userId = useUserStore.getState().id
+                updateTotalLearningCards(userId, learningCards.length)
+                addDailyLearningCards(userId, 1)
 
                 return {
                     cards: updatedCards,
@@ -66,6 +77,10 @@ export const useCardStore = create<CardState>()(
                     ? updatedCards.filter((c) => c.categoryId === state.selectedCategoryId)
                     : updatedCards
 
+                const learningCards = updatedCards.filter((c) => c.status === "learning")
+                const userId = useUserStore.getState().id
+                updateTotalLearningCards(userId, learningCards.length)
+
                 return {
                     cards: updatedCards,
                     filteredCards: filtered,
@@ -76,20 +91,35 @@ export const useCardStore = create<CardState>()(
         removeCard: (id) => {
             set((state) => {
                 const updatedCards = state.cards.filter((card) => card.id !== id)
+                const filtered = state.selectedCategoryId
+                    ? updatedCards.filter((card) => card.categoryId === state.selectedCategoryId)
+                    : updatedCards
+
+                const learningCards = updatedCards.filter((c) => c.status === "learning")
+                const userId = useUserStore.getState().id
+                updateTotalLearningCards(userId, learningCards.length)
+
                 return {
                     cards: updatedCards,
-                    filteredCards: state.selectedCategoryId
-                        ? updatedCards.filter((card) => card.categoryId === state.selectedCategoryId)
-                        : updatedCards,
+                    filteredCards: filtered,
                 }
             })
         },
 
         removeCardsByCategory: (categoryId) => {
-            set((state) => ({
-                cards: state.cards.filter((card) => card.categoryId !== categoryId),
-                filteredCards: state.filteredCards.filter((card) => card.categoryId !== categoryId),
-            }))
+            set((state) => {
+                const updatedCards = state.cards.filter((card) => card.categoryId !== categoryId)
+                const filtered = state.filteredCards.filter((card) => card.categoryId !== categoryId)
+
+                const learningCards = updatedCards.filter((c) => c.status === "learning")
+                const userId = useUserStore.getState().id
+                updateTotalLearningCards(userId, learningCards.length)
+
+                return {
+                    cards: updatedCards,
+                    filteredCards: filtered,
+                }
+            })
         },
 
         setSelectedCategory: (categoryId) => {
@@ -113,4 +143,14 @@ export const useCardStore = create<CardState>()(
         },
     })),
 )
+
+export const initializeCardStore = async () => {
+    const userId = useUserStore.getState().id
+    if (userId) {
+        const userStats = await fetchUserStats(userId)
+        if (userStats) {
+            useCardStore.getState().setCards(useCardStore.getState().cards)
+        }
+    }
+}
 

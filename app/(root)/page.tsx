@@ -14,7 +14,7 @@ export default function Home() {
 const userState = useUserStore((state)=>state)
     console.log(userState)
 
-    useInitialUser();
+    useInitialUser()
     useInitialCards();
     useInitialCategories();
 
