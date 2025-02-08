@@ -1,6 +1,7 @@
 "use client"
 
-import React, { useEffect, useMemo } from "react"
+import type React from "react"
+import { useEffect, useMemo, useState } from "react"
 import { motion, useMotionValue, useTransform, useAnimation } from "framer-motion"
 import { Card } from "./Card"
 import { Redo, Undo } from "lucide-react"
@@ -12,7 +13,8 @@ import { updateCardInFirebase } from "@/app/utils/cardsService"
 export const CardSwipe: React.FC = () => {
     const { removeCard, filteredCards, updateCard } = useCardStore()
     const { categories, selectedCategoryId } = useCategoryStore()
-    const [currentIndex, setCurrentIndex] = React.useState(0)
+    const [currentIndex, setCurrentIndex] = useState(0)
+    const [isAnimating, setIsAnimating] = useState(false)
 
     console.log("🃏 In CardSwipe, Active filteredCards (from Zustand):", filteredCards)
     console.log("📂 Current category:", selectedCategoryId)
@@ -31,14 +33,9 @@ export const CardSwipe: React.FC = () => {
     useEffect(() => {
         console.log("🔄 `filteredCards` updated, redrawing cards...")
         setCurrentIndex(0)
-    }, [selectedCategoryId]) // Only depends on selectedCategoryId now
-
-    useEffect(() => {
-        console.log("📂 Category changed, resetting animations and index...")
         animControls.set({ x: 0, opacity: 1 })
         x.set(0)
-        setCurrentIndex(0)
-    }, [selectedCategoryId])
+    }, [filteredCards])
 
     const x = useMotionValue(0)
     const xInput = [-100, 0, 100]
@@ -60,7 +57,10 @@ export const CardSwipe: React.FC = () => {
         event: MouseEvent | TouchEvent | PointerEvent,
         info: { offset: { x: number; y: number }; velocity: { x: number; y: number } },
     ) => {
+        if (isAnimating) return
+        setIsAnimating(true)
         const swipe = info.offset.x
+
         if (Math.abs(swipe) > 100 && currentIndex < cardsToReview.length) {
             const direction = swipe > 0 ? "right" : "left"
             await animControls.start({ x: swipe > 0 ? 200 : -200, opacity: 0 })
@@ -85,12 +85,12 @@ export const CardSwipe: React.FC = () => {
             await updateCardInFirebase(currentCard.id, updatedCard)
 
             setCurrentIndex((prevIndex) => prevIndex + 1)
-            if (currentIndex < cardsToReview.length - 1) {
-                animControls.set({ x: 0, opacity: 1 })
-            }
-        } else {
-            animControls.start({ x: 0, opacity: 1 })
         }
+
+        // Reset animation state
+        await animControls.start({ x: 0, opacity: 1 })
+        x.set(0)
+        setIsAnimating(false)
     }
 
     if (cardsToReview.length === 0) {
@@ -121,19 +121,21 @@ export const CardSwipe: React.FC = () => {
                 onDragEnd={handleDragEnd}
                 animate={animControls}
             >
-                {currentIndex >= cardsToReview.length ? (
-                    <div>No more cards</div>
-                ) : (
-                    <Card
-                        {...cardsToReview[currentIndex]}
-                        category={categories.find((c) => c.id === cardsToReview[currentIndex].categoryId)?.name || "Unknown"}
-                        x={x}
-                        color={color}
-                        tickPath={tickPath}
-                        crossPathA={crossPathA}
-                        crossPathB={crossPathB}
-                    />
-                )}
+                {/*{currentIndex >= cardsToReview.length ? (*/}
+                {/*    <div>No more cards</div>*/}
+                {/*) : (*/}
+                {/* */}
+                {/*)}*/}
+
+                <Card
+                    {...cardsToReview[currentIndex]}
+                    category={categories.find((c) => c.id === cardsToReview[currentIndex]?.categoryId)?.name || "Unknown"}
+                    x={x}
+                    color={color}
+                    tickPath={tickPath}
+                    crossPathA={crossPathA}
+                    crossPathB={crossPathB}
+                />
             </motion.div>
         </div>
     )
