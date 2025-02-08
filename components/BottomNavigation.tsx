@@ -43,7 +43,7 @@ const Navigation = () => {
     )
 
     return (
-        <div className="block fixed left-10 top-20 z-50">
+        <div className="block fixed lg:left-10 lg:top-20 left-5 top-5 z-50">
             <Sheet open={open} onOpenChange={setOpen}>
                 <SheetTrigger asChild>
                     <Button variant="outline" size="icon">

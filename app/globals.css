@@ -129,7 +129,7 @@ body {
 .sparkling::before,
 .sparkling::after {
   position: absolute;
-  @apply w-[30px] h-[30px] lg:w-[50px] lg:h-[50px] top-[25%] left-[-15%] lg:top-[15%]
+  @apply w-[25px] h-[25px] lg:w-[50px] lg:h-[50px] top-[32%] left-[-12%] lg:top-[15%]
   lg:left-[-15%];
   content: '';
   display: block;

@@ -55,7 +55,8 @@ const data = [
 ]
 
 export function GoalSetter() {
-    const [goal, setGoal] = React.useState(10)
+
+    const [goal, setGoal] = React.useState('10')
 
     function onClick(adjustment: number) {
         setGoal(Math.max(0, Math.min(100, goal + adjustment)))
