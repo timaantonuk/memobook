@@ -3,7 +3,7 @@
 import { useEffect } from "react"
 import { useUser } from "@clerk/nextjs"
 import { useUserStore } from "@/app/store/user-store"
-import { initializeUserStats, fetchUserStats } from "@/app/utils/userStatsService"
+import { initializeUserStats } from "@/app/utils/userStatsService"
 
 export const useInitialUser = () => {
     const { user, isLoaded } = useUser()
@@ -15,11 +15,11 @@ export const useInitialUser = () => {
                 setUser({
                     id: user.id,
                     username: user.username || "",
+                    firstName: user.firstName || "",
                     email: user.primaryEmailAddress?.emailAddress || "",
                     imageUrl: user.imageUrl || "",
                 })
                 await initializeUserStats(user.id)
-                await fetchUserStats(user.id)
             }
         }
 

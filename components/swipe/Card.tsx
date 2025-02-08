@@ -1,6 +1,6 @@
 "use client"
 
-import type React from "react"
+import { useEffect, useState } from "react"
 import { motion, type MotionValue } from "framer-motion"
 import { Separator } from "@/components/ui/separator"
 import StepperOfRepetition from "@/components/RepeatStepper"
@@ -26,19 +26,25 @@ export const Card: React.FC<CardProps> = ({
                                               stepOfRepetition,
                                               x,
                                           }) => {
-    const formatDate = (dateStr: string) => {
-        try {
-            const date = parseISO(dateStr)
-            if (!isValid(date)) {
-                console.warn("Invalid date detected:", dateStr)
+    const [formattedDate, setFormattedDate] = useState<string>("Date not available")
+
+    useEffect(() => {
+        const formatDate = (dateStr: string) => {
+            try {
+                const date = parseISO(dateStr)
+                if (!isValid(date)) {
+                    console.warn("Invalid date detected:", dateStr)
+                    return "Date not available"
+                }
+                return format(date, "dd MMMM yyyy")
+            } catch (e) {
+                console.error("Date formatting error:", e)
                 return "Date not available"
             }
-            return format(date, "dd MMMM yyyy")
-        } catch (e) {
-            console.error("Date formatting error:", e)
-            return "Date not available"
         }
-    }
+
+        setFormattedDate(formatDate(nextReview))
+    }, [nextReview])
 
     return (
         <motion.div
@@ -57,7 +63,7 @@ export const Card: React.FC<CardProps> = ({
                 transition={{ delay: 0.1 }}
                 layout
             >
-                <h1 className="heading-1">{title || "Untitled Card"}</h1>
+                <h1 className="heading-1 text-center">{title || "Untitled Card"}</h1>
             </motion.div>
 
             {photoUrl && (
@@ -77,7 +83,7 @@ export const Card: React.FC<CardProps> = ({
             )}
 
             <motion.p
-                className="whitespace-pre-wrap"
+                className="whitespace-pre-wrap text-sm lg:text-base"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ delay: 0.3 }}
@@ -89,7 +95,7 @@ export const Card: React.FC<CardProps> = ({
             <Separator />
 
             <motion.footer
-                className="flex justify-between px-5 text-xs lg:text-lg"
+                className="flex justify-between px-5 text-xs lg:text-sm"
                 initial={{ y: 20, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
                 transition={{ delay: 0.4 }}
@@ -97,8 +103,8 @@ export const Card: React.FC<CardProps> = ({
             >
                 <StepperOfRepetition step={stepOfRepetition} />
                 <div>
-                    <p className='text-xs opacity-80'>Category: {category || "Uncategorized"}</p>
-                    <p className="text-xs opacity-80">Next review: {formatDate(nextReview)}</p>
+                    <p className="text-xs opacity-80">Category: {category || "Uncategorized"}</p>
+                    <p className="text-xs opacity-80">Next review: {formattedDate}</p>
                 </div>
             </motion.footer>
         </motion.div>

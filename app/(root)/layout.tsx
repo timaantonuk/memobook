@@ -1,23 +1,15 @@
-import type {Metadata} from "next";
-import "../globals.css";
-import Header from "@/components/Header";
-import {Toaster} from "@/components/ui/toaster";
-import BottomNavigation from "@/components/BottomNavigation";
-import React from "react";
-import {Bounce, ToastContainer} from "react-toastify";
-
-
-
-
+import "../globals.css"
+import Header from "@/components/Header"
+import { Toaster } from "@/components/ui/toaster"
+import BottomNavigation from "@/components/BottomNavigation"
+import type React from "react"
+import { Bounce, ToastContainer } from "react-toastify"
 
 export default function RootLayout({
                                        children,
                                    }: Readonly<{
-    children: React.ReactNode;
+    children: React.ReactNode
 }>) {
-
-
-
     return (
         <>
             <ToastContainer
@@ -33,14 +25,11 @@ export default function RootLayout({
                 theme="light"
                 transition={Bounce}
             />
-            <Header/>
+            <Header />
             {children}
-            <BottomNavigation/>
-            <Toaster/>
-
-
+            <BottomNavigation />
+            <Toaster />
         </>
-
-
-    );
+    )
 }
+

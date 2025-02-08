@@ -1,4 +1,4 @@
-'use client'
+"use client"
 import { create } from "zustand"
 import { devtools, persist } from "zustand/middleware"
 import { fetchUserStats, initializeUserStats } from "@/app/utils/userStatsService"

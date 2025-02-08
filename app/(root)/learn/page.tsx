@@ -1,4 +1,5 @@
 "use client"
+
 import { motion } from "framer-motion"
 import { useState, useEffect } from "react"
 import Categories from "@/components/Categories"
@@ -8,21 +9,18 @@ import { useUserStore } from "@/app/store/user-store"
 import { fetchUserCards, updateCardInFirebase } from "@/app/utils/cardsService"
 
 const Page = () => {
-    // Always call hooks in the same order.
-    // Create a mount flag to delay rendering until after hydration.
     const [hasMounted, setHasMounted] = useState(false)
+
     useEffect(() => {
         setHasMounted(true)
     }, [])
 
-    // Retrieve state from your stores.
     const userId = useUserStore((state) => state.id)
     const updateCard = useCardStore((state) => state.updateCard)
     const removeCard = useCardStore((state) => state.removeCard)
     const setCards = useCardStore((state) => state.setCards)
     const cards = useCardStore((state) => state.cards)
 
-    // Animation variants
     const containerVariants = {
         hidden: {
             opacity: 0,
@@ -53,7 +51,6 @@ const Page = () => {
         },
     }
 
-    // Helper function to calculate the next review date.
     const calculateNextReview = (step: number): string => {
         const intervals = [1, 2, 4, 7, 15, 30]
         const maxStep = intervals.length - 1
@@ -70,7 +67,6 @@ const Page = () => {
         return nextDate.toISOString()
     }
 
-    // Function to handle swipe updates.
     const handleSwipe = async (cardId: string, direction: "left" | "right") => {
         const card = cards.find((c) => c.id === cardId)
         if (!card) return
@@ -92,15 +88,10 @@ const Page = () => {
             updateCard(cardId, updatedCard)
         }
 
-        // Update the UI immediately.
-        setCards((prevCards) =>
-            prevCards.map((c) => (c.id === cardId ? updatedCard : c))
-        )
+        setCards((prevCards) => prevCards.map((c) => (c.id === cardId ? updatedCard : c)))
 
-        // Sync with Firestore.
         await updateCardInFirebase(cardId, updatedCard)
 
-        // Load updated cards.
         const updatedCards = await fetchUserCards(userId)
         setCards(updatedCards)
     }
@@ -110,7 +101,6 @@ const Page = () => {
         handleSwipe(cardId, direction)
     }
 
-    // Only render the component after the client has mounted.
     if (!hasMounted) {
         return null
     }
@@ -122,7 +112,7 @@ const Page = () => {
             initial="hidden"
             animate="visible"
         >
-            <motion.div variants={itemVariants}>
+            <motion.div variants={itemVariants} className="w-full">
                 <CardSwipe onSwipe={handleSwipeUpdate} cards={cards} />
             </motion.div>
             <motion.div variants={itemVariants}>
@@ -133,3 +123,4 @@ const Page = () => {
 }
 
 export default Page
+

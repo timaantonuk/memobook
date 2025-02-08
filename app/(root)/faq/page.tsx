@@ -23,7 +23,7 @@ const appDescription = [
         description:
             "If you discover any bugs, have suggestions for improvements, or just want to share your feedback, please email me at tima.antonuk2@gmail.com. I look forward to hearing from you and am happy to answer any questions.",
     },
-];
+]
 
 const Page = () => {
     const containerVariants = {
@@ -75,7 +75,7 @@ const Page = () => {
                 transition={{ delay: 1.8, duration: 0.5 }}
             >
                 <p>If you find any bugs, have questions or propositions feel free contact me by email:</p>
-                <a  href="mailto:tima.antonuk2@gmail.com" className="text-muted hover:text-primary/80 transition-colors">
+                <a href="mailto:tima.antonuk2@gmail.com" className="text-muted hover:text-primary/80 transition-colors">
                     Email: tima.antonuk2@gmail.com
                 </a>
                 <p className="text-muted-foreground">Memobook, All rights reserved.</p>

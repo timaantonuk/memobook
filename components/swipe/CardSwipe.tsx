@@ -1,18 +1,7 @@
 "use client"
 
-import React, {
-    useEffect,
-    useMemo,
-    useState,
-    useCallback,
-    useRef
-} from "react"
-import {
-    motion,
-    useMotionValue,
-    useTransform,
-    useAnimation
-} from "framer-motion"
+import { useEffect, useMemo, useState, useCallback, useRef } from "react"
+import { motion, useMotionValue, useTransform, useAnimation } from "framer-motion"
 import { Card } from "./Card"
 import { Redo, Undo, Loader2 } from "lucide-react"
 import { useCardStore } from "@/app/store/card-store"
@@ -21,14 +10,7 @@ import { updateCardInFirebase, fetchUserCards } from "@/app/utils/cardsService"
 import { useUserStore } from "@/app/store/user-store"
 
 export const CardSwipe: React.FC = () => {
-    // --- ALWAYS CALL HOOKS UNCONDITIONALLY ---
-    // Mount flag
     const [hasMounted, setHasMounted] = useState(false)
-    useEffect(() => {
-        setHasMounted(true)
-    }, [])
-
-    // Other state and refs
     const { removeCard, filteredCards, updateCard, setCards } = useCardStore()
     const { categories, selectedCategoryId } = useCategoryStore()
     const userId = useUserStore((state) => state.id)
@@ -40,7 +22,6 @@ export const CardSwipe: React.FC = () => {
     const refreshTimeoutRef = useRef<NodeJS.Timeout>()
     const cardsToReviewRef = useRef<any[]>([])
 
-    // Motion hooks
     const x = useMotionValue(0)
     const xInput = [-100, 0, 100]
     const rotate = useTransform(x, [-200, 200], [-30, 30])
@@ -52,11 +33,13 @@ export const CardSwipe: React.FC = () => {
         "linear-gradient(180deg, rgb(230, 255, 0) 0%, rgb(3, 209, 0) 100%)",
     ])
 
-    // refreshCards callback
+    useEffect(() => {
+        setHasMounted(true)
+    }, [])
+
     const refreshCards = useCallback(async () => {
         if (!userId) return
 
-        // Clear any pending refresh
         if (refreshTimeoutRef.current) {
             clearTimeout(refreshTimeoutRef.current)
         }
@@ -66,8 +49,8 @@ export const CardSwipe: React.FC = () => {
                 setIsLoading(true)
                 const updatedCards = await fetchUserCards(userId)
                 setCards(updatedCards)
-                setCurrentIndex(0) // Reset index when refreshing cards
-                setHasMoreCards(true) // Reset flag
+                setCurrentIndex(0)
+                setHasMoreCards(true)
             } catch (err) {
                 console.error("Error refreshing cards:", err)
             } finally {
@@ -76,8 +59,9 @@ export const CardSwipe: React.FC = () => {
         }, 300)
     }, [userId, setCards])
 
-    // Filter and sort cards
     const cardsToReview = useMemo(() => {
+        if (!hasMounted) return []
+
         const today = new Date()
         today.setHours(0, 0, 0, 0)
 
@@ -101,17 +85,13 @@ export const CardSwipe: React.FC = () => {
                     return false
                 }
             })
-            .sort(
-                (a, b) =>
-                    new Date(a.nextReview!).getTime() - new Date(b.nextReview!).getTime()
-            )
+            .sort((a, b) => new Date(a.nextReview!).getTime() - new Date(b.nextReview!).getTime())
 
         cardsToReviewRef.current = filteredAndSortedCards
         setHasMoreCards(filteredAndSortedCards.length > 0)
         return filteredAndSortedCards
-    }, [filteredCards])
+    }, [filteredCards, hasMounted])
 
-    // Initialize cards on category change / load
     useEffect(() => {
         const initializeCards = async () => {
             setIsLoading(true)
@@ -126,20 +106,20 @@ export const CardSwipe: React.FC = () => {
                 setIsLoading(false)
             }
         }
-        initializeCards()
-    }, [refreshCards, selectedCategoryId, animControls, x])
+        if (hasMounted) {
+            initializeCards()
+        }
+    }, [refreshCards, animControls, x, hasMounted])
 
-    // Check for remaining cards
     useEffect(() => {
         if (!isLoading && cardsToReview.length === 0 && hasMoreCards) {
             refreshCards()
         }
     }, [cardsToReview.length, refreshCards, isLoading, hasMoreCards])
 
-    // Handle drag end
     const handleDragEnd = async (
         event: MouseEvent | TouchEvent | PointerEvent,
-        info: { offset: { x: number; y: number }; velocity: { x: number; y: number } }
+        info: { offset: { x: number; y: number }; velocity: { x: number; y: number } },
     ) => {
         if (isAnimating || !cardsToReviewRef.current[currentIndex]) return
 
@@ -148,10 +128,7 @@ export const CardSwipe: React.FC = () => {
             const swipe = info.offset.x
             const swipeThreshold = 100
 
-            if (
-                Math.abs(swipe) > swipeThreshold &&
-                currentIndex < cardsToReviewRef.current.length
-            ) {
+            if (Math.abs(swipe) > swipeThreshold && currentIndex < cardsToReviewRef.current.length) {
                 const direction = swipe > 0 ? "right" : "left"
                 const moveDistance = swipe > 0 ? 1000 : -1000
 
@@ -160,7 +137,6 @@ export const CardSwipe: React.FC = () => {
                     throw new Error("Current card not found")
                 }
 
-                // Animate current card off screen
                 await animControls.start({
                     x: moveDistance,
                     opacity: 0,
@@ -178,34 +154,25 @@ export const CardSwipe: React.FC = () => {
                 }
 
                 const nextReviewDate = new Date()
-                nextReviewDate.setDate(
-                    nextReviewDate.getDate() + Math.pow(2, updatedCard.stepOfRepetition)
-                )
+                nextReviewDate.setDate(nextReviewDate.getDate() + Math.pow(2, updatedCard.stepOfRepetition))
                 updatedCard.nextReview = nextReviewDate.toISOString()
 
-                // Update local state
                 updateCard(currentCard.id, updatedCard)
-                // Update Firebase
                 await updateCardInFirebase(currentCard.id, updatedCard)
 
-                // If this is the last card, refresh
-                const isLastCard =
-                    currentIndex === cardsToReviewRef.current.length - 1
+                const isLastCard = currentIndex === cardsToReviewRef.current.length - 1
                 if (isLastCard) {
                     await refreshCards()
                 } else {
                     setCurrentIndex((prev) => prev + 1)
                 }
 
-                // Reset card position while invisible
                 await animControls.set({ x: 0, opacity: 0 })
-                // Fade in the next card
                 await animControls.start({
                     opacity: 1,
                     transition: { duration: 0.3 },
                 })
             } else {
-                // Not swiped far enough—animate back to center
                 await animControls.start({
                     x: 0,
                     opacity: 1,
@@ -220,26 +187,21 @@ export const CardSwipe: React.FC = () => {
         }
     }
 
-    // --- NOW CONSIDER RENDERING THE CONTENT ---
-
-    // If not mounted, render nothing (or a loader if you prefer)
     if (!hasMounted) {
         return null
     }
 
-    // Loading state
     if (isLoading) {
         return (
-            <div className="flex items-center justify-center h-screen rounded-3xl bg-gradient-to-b from-purple-600 to-purple-900">
+            <div className="flex items-center justify-center h-screen w-full rounded-3xl bg-gradient-to-b from-purple-600 to-purple-900">
                 <Loader2 className="w-10 h-10 animate-spin" />
             </div>
         )
     }
 
-    // Error state
     if (error) {
         return (
-            <div className="flex items-center justify-center h-screen rounded-3xl bg-gradient-to-b from-red-600 to-red-900">
+            <div className="flex items-center justify-center h-screen w-full rounded-3xl bg-gradient-to-b from-red-600 to-red-900">
                 <div className="text-center p-8">
                     <p className="text-2xl mb-4">Error</p>
                     <p>{error}</p>
@@ -248,10 +210,9 @@ export const CardSwipe: React.FC = () => {
         )
     }
 
-    // No cards state
     if (!isLoading && (!cardsToReviewRef.current || cardsToReviewRef.current.length === 0)) {
         return (
-            <div className="flex items-center justify-center h-screen rounded-3xl bg-gradient-to-b from-purple-600 to-purple-900">
+            <div className="flex items-center justify-center h-screen w-full rounded-3xl bg-gradient-to-b from-purple-600 to-purple-900">
                 <div className="text-center text-2xl lg:text-5xl p-8">🎉 No cards to review today!</div>
             </div>
         )
@@ -259,10 +220,9 @@ export const CardSwipe: React.FC = () => {
 
     const currentCard = cardsToReviewRef.current[currentIndex]
 
-    // All cards reviewed state
     if (!currentCard && !isLoading) {
         return (
-            <div className="flex items-center justify-center h-screen rounded-3xl bg-gradient-to-b from-purple-600 to-purple-900">
+            <div className="flex items-center justify-center h-screen w-full rounded-3xl bg-gradient-to-b from-purple-600 to-purple-900">
                 <div className="text-center text-5xl p-8">
                     {hasMoreCards ? "Loading more cards..." : "All cards reviewed! 🎉"}
                 </div>
@@ -271,15 +231,15 @@ export const CardSwipe: React.FC = () => {
     }
 
     return (
-        <div className="relative w-full h-screen rounded-3xl laptop:pt-20 flex items-center justify-center overflow-hidden">
+        <div className="relative w-full h-[75vh] lg:h-screen rounded-3xl laptop:pt-20 flex items-center justify-center overflow-hidden">
             <motion.div className="absolute inset-0" style={{ background }} />
             <div className="memory-card"></div>
-            <div className="absolute top-10 left-[42%] pb-4 flex gap-5 fading-text">
+            <div className="absolute top-10  left-[28%] lg:left-[42%] pb-4 flex gap-5 fading-text">
                 <Undo /> <span>Swipe card</span> <Redo />
             </div>
 
             <motion.div
-                className="absolute flex w-[45rem] justify-center"
+                className="absolute flex w-full max-w-[45rem] justify-center px-4"
                 style={{ x, rotate, opacity }}
                 drag="x"
                 dragConstraints={{ left: -1000, right: 1000 }}
@@ -290,13 +250,11 @@ export const CardSwipe: React.FC = () => {
             >
                 <Card
                     {...currentCard}
-                    category={
-                        categories.find((c) => c.id === currentCard.categoryId)?.name ||
-                        "Uncategorized"
-                    }
+                    category={categories.find((c) => c.id === currentCard.categoryId)?.name || "Uncategorized"}
                     x={x}
                 />
             </motion.div>
         </div>
     )
 }
+

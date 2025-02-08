@@ -1,7 +1,9 @@
 "use client"
+
 import { motion } from "framer-motion"
 import Categories from "@/components/Categories"
 import CardForm from "@/components/CardForm"
+import ClientOnly from "@/components/ClientOnly"
 
 const Page = () => {
     const containerVariants = {
@@ -35,19 +37,21 @@ const Page = () => {
     }
 
     return (
-        <motion.section
-            className="main-container flex flex-col items-center lg:items-stretch lg:grid lg:grid-cols-[2fr_1fr] gap-5"
-            variants={containerVariants}
-            initial="hidden"
-            animate="visible"
-        >
-            <motion.div variants={itemVariants}>
-                <CardForm />
-            </motion.div>
-            <motion.div variants={itemVariants}>
-                <Categories />
-            </motion.div>
-        </motion.section>
+        <ClientOnly>
+            <motion.section
+                className="main-container flex flex-col items-center lg:items-stretch lg:grid lg:grid-cols-[2fr_1fr] gap-5"
+                variants={containerVariants}
+                initial="hidden"
+                animate="visible"
+            >
+                <motion.div variants={itemVariants}>
+                    <CardForm />
+                </motion.div>
+                <motion.div variants={itemVariants}>
+                    <Categories />
+                </motion.div>
+            </motion.section>
+        </ClientOnly>
     )
 }
 

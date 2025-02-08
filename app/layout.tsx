@@ -1,18 +1,23 @@
-import type { Metadata } from "next";
-import {Poppins} from "next/font/google";
-import './globals.css'
+import type { Metadata } from "next"
+import { Poppins } from "next/font/google"
+import "./globals.css"
 import { ThemeProvider } from "@/components/theme-provider"
+import { ClerkProvider } from "@clerk/nextjs"
+import type React from "react"
+import UserProvider from "@/components/UserProvider"
+import ClientOnly from "@/components/ClientOnly"
 
-import {
-    ClerkProvider,
-} from '@clerk/nextjs'
-import React from "react";
-import UserProvider from "@/components/UserProvider";
+const poppins = Poppins({
+    subsets: ["latin"],
+    weight: ["100", "200", "300", "400", "500", "600", "700", "800", "900"],
+    style: ["normal", "italic"],
+    variable: "--font-poppins",
+})
 
 export const metadata: Metadata = {
     title: "MemoBook - Learn Smarter",
     icons: {
-        icon: '/favicon.svg'
+        icon: "/favicon.svg",
     },
     description:
         "MemoBook is a free flashcard application that uses a proven spaced repetition algorithm to help you master any subject efficiently.",
@@ -36,44 +41,30 @@ export const metadata: Metadata = {
         title: "MemoBook - Learn Smarter",
         description:
             "Enhance your learning with MemoBook, a free flashcard app based on spaced repetition for optimal retention.",
-        images: ["https://img.freepik.com/free-vector/gradient-brain-background_23-2150460414.jpg?t=st=1739042664~exp=1739046264~hmac=3d5d9a64b12edc723c5c67bceb4711514d2931fb859ce65b54083b71f219988c&w=1380"],
+        images: [
+            "https://img.freepik.com/free-vector/gradient-brain-background_23-2150460414.jpg?t=st=1739042664~exp=1739046264~hmac=3d5d9a64b12edc723c5c67bceb4711514d2931fb859ce65b54083b71f219988c&w=1380",
+        ],
     },
-};
-
-const poppins = Poppins({
-    subsets: ["latin"],
-    weight: ["100", "200", "300", "400", "500", "600", "700", "800", "900"],
-    style: ["normal", "italic"],
-    variable: "--font-poppins",
-})
-
+}
 
 export default function RootLayout({
-  children,
-}: Readonly<{
-  children: React.ReactNode;
+                                       children,
+                                   }: Readonly<{
+    children: React.ReactNode
 }>) {
-  return (
-      <ClerkProvider publishableKey={process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY}>
-    <html lang="en" suppressHydrationWarning>
-
-    <body
-        className={`${poppins.variable} ${poppins.variable} antialiased`}
-      >
-      <UserProvider/>
-      <ThemeProvider
-          attribute="class"
-          defaultTheme="dark"
-          enableSystem
-          disableTransitionOnChange
-      >
-
-                  {children}
-
-
-      </ThemeProvider>
-      </body>
-    </html>
-      </ClerkProvider>
-  );
+    return (
+        <ClerkProvider>
+            <html lang="en" suppressHydrationWarning>
+            <body className={`${poppins.variable} antialiased`}>
+            <ClientOnly>
+                <UserProvider />
+                <ThemeProvider attribute="class" defaultTheme="dark" enableSystem disableTransitionOnChange>
+                    {children}
+                </ThemeProvider>
+            </ClientOnly>
+            </body>
+            </html>
+        </ClerkProvider>
+    )
 }
+

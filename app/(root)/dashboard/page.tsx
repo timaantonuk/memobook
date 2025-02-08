@@ -1,4 +1,5 @@
 "use client"
+
 import { useEffect, useState } from "react"
 import { motion } from "framer-motion"
 import { GoalSetter } from "@/components/GoalSetter"
@@ -10,13 +11,13 @@ import { useUserStatsStore } from "@/app/store/user-stats"
 import Confetti from "react-confetti"
 import { useWindowSize } from "react-use"
 import { Bounce, toast, ToastContainer } from "react-toastify"
+import ClientOnly from "@/components/ClientOnly"
 
 const Page = () => {
     const { width, height } = useWindowSize()
     const userId = useUserStore((state) => state.id)
     const { initializeStats } = useUserStatsStore()
     const [showConfetti, setShowConfetti] = useState(false)
-    const [mounted, setMounted] = useState(false)
 
     const notify = () =>
         toast("🦄 Welcome back!", {
@@ -32,8 +33,6 @@ const Page = () => {
         })
 
     useEffect(() => {
-        setMounted(true)
-
         // Check if this is a new login session
         const isNewSession = !sessionStorage.getItem("sessionActive")
 
@@ -95,21 +94,21 @@ const Page = () => {
     ]
 
     return (
-        <motion.section
-            className="main-container flex flex-col-reverse px-5 lg:grid gap-5 lg:grid-cols-2 pb-20 lg:pb-5"
-            variants={containerVariants}
-            initial="hidden"
-            animate="visible"
-        >
-            {mounted && showConfetti && <Confetti recycle={false} width={width} height={height} />}
+        <ClientOnly>
+            <motion.section
+                className="main-container flex flex-col-reverse px-5 lg:grid gap-5 lg:grid-cols-2 pb-20 lg:pb-5"
+                variants={containerVariants}
+                initial="hidden"
+                animate="visible"
+            >
+                {showConfetti && <Confetti recycle={false} width={width} height={height} />}
 
-            {statBlocks.map(({ component, id }) => (
-                <motion.div key={id} variants={itemVariants} className="w-full h-full">
-                    {component}
-                </motion.div>
-            ))}
+                {statBlocks.map(({ component, id }) => (
+                    <motion.div key={id} variants={itemVariants} className="w-full h-full">
+                        {component}
+                    </motion.div>
+                ))}
 
-            {mounted && (
                 <ToastContainer
                     position="top-right"
                     autoClose={5000}
@@ -123,8 +122,8 @@ const Page = () => {
                     theme="light"
                     transition={Bounce}
                 />
-            )}
-        </motion.section>
+            </motion.section>
+        </ClientOnly>
     )
 }
 
