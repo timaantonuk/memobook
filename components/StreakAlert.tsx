@@ -3,7 +3,6 @@ import { useUserStatsStore } from "@/app/store/user-stats"
 import { useUserStore } from "@/app/store/user-store"
 import { useEffect } from "react"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
-import { Flame } from "lucide-react"
 
 const StreakAlert = () => {
     const { stats, initializeStats } = useUserStatsStore()
@@ -22,7 +21,7 @@ const StreakAlert = () => {
                 <div className='sparkling'>
                     <AlertTitle className='text-xl lg:text-3xl underline'>Current Streak</AlertTitle>
                     <AlertDescription className='lg:text-2xl'>
-                        You've been learning for {stats.streak} day{stats.streak !== 1 ? "s" : ""} in a row 🔥
+                        You&apos;ve been learning for {stats.streak} day{stats.streak !== 1 ? 's' : ''} in a row 🔥
                     </AlertDescription>
                 </div>
             </Alert>
