@@ -83,7 +83,7 @@ const CategoriesWithCardsInfo = () => {
     }
 
     return (
-        <article className="w-[95vw] lg:w-auto h-full">
+        <article className="w-[95vw] mb-48 lg:mb-0 lg:w-auto h-full">
             <ScrollArea className="h-full w-full rounded-md border p-4">
                 <div className="flex justify-between items-center mb-5">
                     <h3 className="heading-3">Categories</h3>
