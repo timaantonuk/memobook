@@ -17,7 +17,7 @@ const poppins = Poppins({
 export const metadata: Metadata = {
     title: "MemoBook - Learn Smarter",
     icons: {
-        icon: "/favicon.svg",
+        icon: "/favicon.ico",
     },
     description:
         "MemoBook is a free flashcard application that uses a proven spaced repetition algorithm to help you master any subject efficiently.",
