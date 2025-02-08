@@ -9,6 +9,10 @@ export default {
   ],
   theme: {
   	extend: {
+		  screens: {
+			  'laptop': { 'min': '1025px', 'max': '1750px' },
+		  },
+
   		fontFamily: {
   			sans: [
   				'var(--font-poppins)'

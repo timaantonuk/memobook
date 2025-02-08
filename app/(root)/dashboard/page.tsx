@@ -1,38 +1,5 @@
-// "use client"
-// import { useEffect } from "react"
-// import { GoalSetter } from "@/components/GoalSetter"
-// import LineChartStat from "@/components/LineChartStat"
-// import LearningStats from "@/components/LearningStats"
-// import StreakAlert from "@/components/StreakAlert"
-// import { useUserStore } from "@/app/store/user-store"
-// import { useUserStatsStore } from "@/app/store/user-stats"
-//
-// const Page = () => {
-//     const userId = useUserStore((state) => state.id)
-//     const { initializeStats } = useUserStatsStore()
-//
-//     useEffect(() => {
-//         if (userId) {
-//             initializeStats(userId)
-//         }
-//     }, [userId, initializeStats])
-//
-//     return (
-//         <section className="main-container flex flex-col-reverse px-5 lg:grid gap-5 lg:grid-cols-2 pb-20 lg:pb-5">
-//             <GoalSetter />
-//             <LineChartStat />
-//             <LearningStats />
-//             <StreakAlert />
-//         </section>
-//     )
-// }
-//
-// export default Page
-//
-
-
 "use client"
-import { useEffect } from "react"
+import { useEffect, useState } from "react"
 import { motion } from "framer-motion"
 import { GoalSetter } from "@/components/GoalSetter"
 import LineChartStat from "@/components/LineChartStat"
@@ -40,10 +7,49 @@ import LearningStats from "@/components/LearningStats"
 import StreakAlert from "@/components/StreakAlert"
 import { useUserStore } from "@/app/store/user-store"
 import { useUserStatsStore } from "@/app/store/user-stats"
+import Confetti from "react-confetti"
+import { useWindowSize } from "react-use"
+import { Bounce, toast, ToastContainer } from "react-toastify"
 
 const Page = () => {
+    const { width, height } = useWindowSize()
     const userId = useUserStore((state) => state.id)
     const { initializeStats } = useUserStatsStore()
+    const [showConfetti, setShowConfetti] = useState(false)
+    const [mounted, setMounted] = useState(false)
+
+    const notify = () =>
+        toast("🦄 Welcome back!", {
+            position: "top-right",
+            autoClose: 3000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+            theme: "light",
+            transition: Bounce,
+        })
+
+    useEffect(() => {
+        setMounted(true)
+
+        // Check if this is a new login session
+        const isNewSession = !sessionStorage.getItem("sessionActive")
+
+        if (isNewSession) {
+            setShowConfetti(true)
+            notify()
+            sessionStorage.setItem("sessionActive", "true")
+        }
+
+        // Clean up confetti after 5 seconds
+        const confettiTimer = setTimeout(() => {
+            setShowConfetti(false)
+        }, 5000)
+
+        return () => clearTimeout(confettiTimer)
+    }, [notify]) // Added notify to dependencies
 
     useEffect(() => {
         if (userId) {
@@ -95,11 +101,29 @@ const Page = () => {
             initial="hidden"
             animate="visible"
         >
+            {mounted && showConfetti && <Confetti recycle={false} width={width} height={height} />}
+
             {statBlocks.map(({ component, id }) => (
                 <motion.div key={id} variants={itemVariants} className="w-full h-full">
                     {component}
                 </motion.div>
             ))}
+
+            {mounted && (
+                <ToastContainer
+                    position="top-right"
+                    autoClose={5000}
+                    hideProgressBar={false}
+                    newestOnTop={false}
+                    closeOnClick
+                    rtl={false}
+                    pauseOnFocusLoss
+                    draggable
+                    pauseOnHover
+                    theme="light"
+                    transition={Bounce}
+                />
+            )}
         </motion.section>
     )
 }

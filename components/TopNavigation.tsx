@@ -15,7 +15,7 @@ const TopNavigation = () => {
             <BreadcrumbList>
 
                 <BreadcrumbItem>
-                    <BreadcrumbLink href="/">Home</BreadcrumbLink>
+                    <BreadcrumbLink href="/dashboard">Home</BreadcrumbLink>
                 </BreadcrumbItem>
                 <BreadcrumbSeparator/>
 

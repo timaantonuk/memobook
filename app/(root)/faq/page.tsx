@@ -46,13 +46,13 @@ const Page = () => {
             </motion.div>
 
             <motion.footer
-                className="fixed bottom-0 left-1/2 -translate-x-1/2 pb-10 mt-10 text-center"
+                className="bottom-0 right-1/2 translate-x-40 mt-32 text-center text-muted text-xs"
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 1.8, duration: 0.5 }}
             >
                 <p>If you find any bugs, have questions or propositions feel free contact me by email:</p>
-                <a href="mailto:tima.antonuk2@gmail.com" className="text-primary hover:text-primary/80 transition-colors">
+                <a  href="mailto:tima.antonuk2@gmail.com" className="text-muted hover:text-primary/80 transition-colors">
                     Email: tima.antonuk2@gmail.com
                 </a>
                 <p className="text-muted-foreground">Memobook, All rights reserved.</p>

@@ -97,8 +97,8 @@ export const Card: React.FC<CardProps> = ({
             >
                 <StepperOfRepetition step={stepOfRepetition} />
                 <div>
-                    <p>Category: {category || "Uncategorized"}</p>
-                    <p className="text-sm text-muted-foreground">Next review: {formatDate(nextReview)}</p>
+                    <p className='text-xs opacity-80'>Category: {category || "Uncategorized"}</p>
+                    <p className="text-xs opacity-80">Next review: {formatDate(nextReview)}</p>
                 </div>
             </motion.footer>
         </motion.div>

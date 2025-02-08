@@ -65,7 +65,12 @@ export default function PopoverBtn() {
                                         <SelectItem value="🔥">🔥</SelectItem>
                                         <SelectItem value="✅">✅</SelectItem>
                                         <SelectItem value="🥵">🥵</SelectItem>
-                                        <SelectItem value="🗣️">🗣️</SelectItem>
+                                        <SelectItem value="☀️">☀️</SelectItem>
+                                        <SelectItem value="⚠️">⚠️</SelectItem>
+                                        <SelectItem value="🦄">🦄</SelectItem>
+                                        <SelectItem value="🌈️">🌈️</SelectItem>
+                                        <SelectItem value="🦋">🦋</SelectItem>
+                                        <SelectItem value="👾">👾</SelectItem>
                                     </SelectGroup>
                                 </SelectContent>
                             </Select>

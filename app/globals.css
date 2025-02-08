@@ -129,8 +129,8 @@ body {
 .sparkling::before,
 .sparkling::after {
   position: absolute;
-  @apply w-[40px] h-[40px] lg:w-[50px] lg:h-[50px] top-[12%] left-[-30%] lg:top-[15%]
-  lg:left-[-20%];
+  @apply w-[30px] h-[30px] lg:w-[50px] lg:h-[50px] top-[25%] left-[-15%] lg:top-[15%]
+  lg:left-[-15%];
   content: '';
   display: block;
   border-radius: 50%;
@@ -229,4 +229,9 @@ body {
     opacity: 100%;
   }
 }
+
+
+
+
+
 

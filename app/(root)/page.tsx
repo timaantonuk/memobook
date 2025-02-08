@@ -4,6 +4,7 @@ import {useUserStore} from "@/app/store/user-store";
 import {useInitialUser} from "@/hooks/use-initial-user";
 import {useInitialCards} from "@/hooks/use-initial-cards";
 import {useInitialCategories} from "@/hooks/use-initial-categories";
+import {redirect} from "next/navigation";
 
 // import { collection, getDocs, deleteDoc, doc } from "firebase/firestore";
 // import { db } from "@/app/firebaseConfig";
@@ -18,7 +19,7 @@ const userState = useUserStore((state)=>state)
     useInitialCards();
     useInitialCategories();
 
-
+    redirect('/dashboard')
 //     async function clearFirestoreCollections() {
 //         try {
 //             // Очистка коллекции `cards`
@@ -46,11 +47,5 @@ const userState = useUserStore((state)=>state)
 // // Вызвать функцию
 //     clearFirestoreCollections();
 
-    return (
-        <div className='pl-56'>
-            <p>
-                lol
-            </p>
-        </div>
-    );
+
 }

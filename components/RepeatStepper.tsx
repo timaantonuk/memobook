@@ -5,15 +5,15 @@ export default function StepperOfRepetition({ step }: { step: number }) {
 
     return (
         <nav aria-label="Progress" className="flex items-center justify-center">
-            <p className="font-medium">
+            <p className="font-medium text-sm">
                 Repeat {normalizedStep} of {totalSteps}
             </p>
-            <ol role="list" className="ml-8 flex items-center space-x-3">
+            <ol role="list" className="ml-3 flex items-center space-x-3">
                 {steps.map((num) => (
                     <li key={num}>
                         {num < normalizedStep ? (
                             // Пройденные шаги (фиолетовые)
-                            <span className="block size-2.5 rounded-full bg-violet-950" />
+                            <span className="block size-2 lg:size-2.5 rounded-full bg-violet-950" />
                         ) : num === normalizedStep ? (
                             // Текущий шаг (подсвеченный)
                             <span className="relative flex items-center justify-center">
@@ -24,7 +24,7 @@ export default function StepperOfRepetition({ step }: { step: number }) {
                             </span>
                         ) : (
                             // Оставшиеся шаги (серые)
-                            <span className="block size-2.5 rounded-full bg-gray-200" />
+                            <span className="block size-2 lg:size-2.5 rounded-full bg-gray-200" />
                         )}
                     </li>
                 ))}

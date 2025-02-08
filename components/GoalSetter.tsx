@@ -14,51 +14,51 @@ import ToastNotification from "@/components/ToastNotification";
 
 const data = [
     {
-        goal: 400,
+        goal: 40,
     },
     {
-        goal: 300,
+        goal: 30,
     },
     {
-        goal: 200,
+        goal: 20,
     },
     {
-        goal: 300,
+        goal: 30,
     },
     {
-        goal: 200,
+        goal: 20,
     },
     {
-        goal: 278,
+        goal: 28,
     },
     {
-        goal: 189,
+        goal: 18,
     },
     {
-        goal: 239,
+        goal: 24,
     },
     {
-        goal: 300,
+        goal: 30,
     },
     {
-        goal: 200,
+        goal: 20,
     },
     {
-        goal: 278,
+        goal: 27,
     },
     {
-        goal: 189,
+        goal: 19,
     },
     {
-        goal: 349,
+        goal: 34,
     },
 ]
 
 export function GoalSetter() {
-    const [goal, setGoal] = React.useState(350)
+    const [goal, setGoal] = React.useState(10)
 
     function onClick(adjustment: number) {
-        setGoal(Math.max(200, Math.min(400, goal + adjustment)))
+        setGoal(Math.max(0, Math.min(100, goal + adjustment)))
     }
 
     return (
@@ -76,7 +76,6 @@ export function GoalSetter() {
                             size="icon"
                             className="h-8 w-8 shrink-0 rounded-full"
                             onClick={() => onClick(-10)}
-                            disabled={goal <= 200}
                         >
                             <Minus/>
                             <span className="sr-only">Decrease</span>

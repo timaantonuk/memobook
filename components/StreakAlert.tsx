@@ -16,13 +16,17 @@ const StreakAlert = () => {
     }, [userId, initializeStats])
 
     return (
-        <Alert>
-            <Flame className="h-4 w-4" />
-            <AlertTitle>Current Streak</AlertTitle>
-            <AlertDescription>
-                You've been learning for {stats.streak} day{stats.streak !== 1 ? "s" : ""} in a row! Keep it up!
-            </AlertDescription>
-        </Alert>
+        <div className='w-full mx-auto h-full'>
+            <Alert className='h-full flex items-center justify-center  relative p-5'>
+
+                <div className='sparkling'>
+                    <AlertTitle className='text-xl lg:text-3xl underline'>Current Streak</AlertTitle>
+                    <AlertDescription className='lg:text-2xl'>
+                        You've been learning for {stats.streak} day{stats.streak !== 1 ? "s" : ""} in a row 🔥
+                    </AlertDescription>
+                </div>
+            </Alert>
+        </div>
     )
 }
 

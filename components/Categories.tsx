@@ -4,7 +4,7 @@ import { ScrollArea } from "@/components/ui/scroll-area"
 import { Separator } from "@/components/ui/separator"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { Trash, Plus } from "lucide-react"
+import {Trash, Plus, TrashIcon, Check} from "lucide-react"
 import { useCategoryStore } from "@/app/store/categories-store"
 import { useCardStore } from "@/app/store/card-store"
 import { useUserStore } from "@/app/store/user-store"
@@ -83,7 +83,7 @@ const CategoriesWithCardsInfo = () => {
     }
 
     return (
-        <article className="w-[95%] lg:w-auto">
+        <article className="w-[95vw] lg:w-auto h-full">
             <ScrollArea className="h-full w-full rounded-md border p-4">
                 <div className="flex justify-between items-center mb-5">
                     <h3 className="heading-3">Categories</h3>
@@ -91,44 +91,56 @@ const CategoriesWithCardsInfo = () => {
                 </div>
 
                 <div className="mb-4">
-                    <Button
-                        variant={selectedCategoryId === null ? "default" : "outline"}
-                        className="w-full text-left"
-                        onClick={() => setSelectedCategory(null)}
-                    >
-                        📂 All Cards
-                    </Button>
-                    <p>{totalCards} Cards total</p>
-                    <p>{totalReviewCards} Cards to review today</p>
+                   <div className='flex gap-3'>
+                       <Button
+                           variant={selectedCategoryId === null ? "default" : "outline"}
+                           className="w-full text-left"
+                           onClick={() => setSelectedCategory(null)}
+                       >
+                           📂 All Cards
+                       </Button>
+                       <Button disabled className="w-16">
+                           <Check />
+                       </Button>
+                   </div>
+                    <div className='flex gap-5 text-sm text-muted py-2 '>
+                        <p>{totalCards} Cards total</p>
+                        <p>{totalReviewCards} Cards to review today</p>
+                    </div>
+                    <Separator className="mb-2"/>
                 </div>
 
-                <div className="mb-4 flex gap-2">
-                    <Input
-                        type="text"
-                        placeholder="New category name"
-                        value={newCategoryName}
-                        onChange={(e) => setNewCategoryName(e.target.value)}
-                    />
-                    <Button onClick={handleAddCategory}>
-                        <Plus className="w-5 h-5" />
-                    </Button>
-                </div>
+                {/*<div className="mb-4 flex gap-2">*/}
+                {/*    <Input*/}
+                {/*        type="text"*/}
+                {/*        placeholder="New category name"*/}
+                {/*        value={newCategoryName}*/}
+                {/*        onChange={(e) => setNewCategoryName(e.target.value)}*/}
+                {/*    />*/}
+                {/*    <Button onClick={handleAddCategory}>*/}
+                {/*        <Plus className="w-5 h-5" />*/}
+                {/*    </Button>*/}
+                {/*</div>*/}
 
                 {categories.map((category) => (
                     <div key={category.id} className="mb-4">
-                        <Button
-                            variant={selectedCategoryId === category.id ? "default" : "outline"}
-                            className="w-full text-left"
-                            onClick={() => setSelectedCategory(category.id)}
-                        >
-                            {category.name}
-                        </Button>
-                        <Button variant="outline" className="p-1" onClick={() => handleDeleteCategory(category.id)}>
-                            <Trash className="w-4 h-4 text-red-500" />
-                        </Button>
-                        <p>{cardsCount[category.id] || 0} Cards total</p>
-                        <p>{reviewCount[category.id] || 0} Cards to review today</p>
-                        <Separator className="mb-2" />
+                      <div className='flex gap-3'>
+                          <Button
+                              variant={selectedCategoryId === category.id ? "default" : "outline"}
+                              className="w-full text-left"
+                              onClick={() => setSelectedCategory(category.id)}
+                          >
+                              {category.name}
+                          </Button>
+                          <Button className="w-16" onClick={() => handleDeleteCategory(category.id)}>
+                              <Trash className='w-16' />
+                          </Button>
+                      </div>
+                        <div className='flex gap-5 text-sm text-muted py-2'>
+                            <p>{cardsCount[category.id] || 0} Cards total</p>
+                            <p>{reviewCount[category.id] || 0} Cards to review today</p>
+                        </div>
+                        <Separator className="mb-2"/>
                     </div>
                 ))}
             </ScrollArea>
