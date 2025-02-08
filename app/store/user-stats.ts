@@ -2,27 +2,12 @@
 import { create } from "zustand"
 import { devtools, persist } from "zustand/middleware"
 import { fetchUserStats, initializeUserStats } from "@/app/utils/userStatsService"
-
-interface UserStats {
-    streak: number
-    totalLearningCards: number
-    dailyLearningCards: { [date: string]: number }
-    lastLoginDate: string
-}
-
-interface UserStatsStore {
-    stats: UserStats
-    setStats: (stats: UserStats) => void
-    incrementStreak: () => void
-    setTotalLearningCards: (count: number) => void
-    addDailyLearningCards: (date: string, count: number) => void
-    initializeStats: (userId: string) => Promise<void>
-}
+import type { UserStatsStore } from "@/types/user-stats"
 
 export const useUserStatsStore = create<UserStatsStore>()(
     devtools(
         persist(
-            (set, get) => ({
+            (set) => ({
                 stats: {
                     streak: 0,
                     totalLearningCards: 0,

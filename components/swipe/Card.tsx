@@ -1,21 +1,12 @@
 "use client"
 
 import { useEffect, useState } from "react"
-import { motion, type MotionValue } from "framer-motion"
+import { motion } from "framer-motion"
 import { Separator } from "@/components/ui/separator"
 import StepperOfRepetition from "@/components/RepeatStepper"
 import { format, isValid, parseISO } from "date-fns"
-
-interface CardProps {
-    id: string
-    title: string
-    description: string
-    photoUrl?: string
-    category: string
-    nextReview: string
-    stepOfRepetition: number
-    x: MotionValue<number>
-}
+import type { CardProps } from "@/types/card"
+import type React from "react" // Added import for React
 
 export const Card: React.FC<CardProps> = ({
                                               title,

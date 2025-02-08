@@ -1,29 +1,11 @@
-'use client';
+"use client"
 
-import {
-    Select,
-    SelectContent,
-    SelectGroup,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
-} from "@/components/ui/select";
-import { useCategoryStore } from "@/app/store/categories-store";
+import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { useCategoryStore } from "@/app/store/categories-store"
+import type { CategorySelectProps } from "@/types/category"
 
-interface CategorySelectProps {
-    value?: string; // `categoryId` хранится тут
-    onValueChange: (value: string) => void;
-    className?: string;
-    placeholder?: string;
-}
-
-export default function CategorySelect({
-                                           value,
-                                           onValueChange,
-                                           className,
-                                           placeholder,
-                                       }: CategorySelectProps) {
-    const categories = useCategoryStore((state) => state.categories);
+export default function CategorySelect({ value, onValueChange, className, placeholder }: CategorySelectProps) {
+    const categories = useCategoryStore((state) => state.categories)
 
     return (
         <Select value={value} onValueChange={onValueChange}>
@@ -42,5 +24,6 @@ export default function CategorySelect({
                 </SelectGroup>
             </SelectContent>
         </Select>
-    );
+    )
 }
+

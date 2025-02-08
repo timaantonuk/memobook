@@ -74,6 +74,7 @@ const CardForm = () => {
 
     return (
         <Form {...form}>
+            <ToastContainer/>
             <CardWrapper width="w-[95%] mx-auto py-10 px-4 lg:w-full lg:p-10">
                 <h1 className="heading-1 mb-10">Create Card</h1>
                 <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col gap-5">

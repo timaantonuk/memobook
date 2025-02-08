@@ -1,22 +1,36 @@
-"use client"
+interface StepperOfRepetitionProps {
+    step: number
+}
 
-import type React from "react"
-import { useState } from "react"
-import { Button } from "@/components/ui/button"
-
-export const RepeatStepper: React.FC = () => {
-    const [count, setCount] = useState(0)
+export default function StepperOfRepetition({ step }: StepperOfRepetitionProps) {
+    const totalSteps = 9
+    const normalizedStep = Math.min(step + 1, totalSteps)
+    const steps = Array.from({ length: totalSteps }, (_, index) => index + 1)
 
     return (
-        <div className="flex items-center space-x-2">
-            <Button variant="outline" size="sm" onClick={() => setCount((c) => Math.max(0, c - 1))}>
-                -
-            </Button>
-            <span>{count}</span>
-            <Button variant="outline" size="sm" onClick={() => setCount((c) => c + 1)}>
-                +
-            </Button>
-        </div>
+        <nav aria-label="Progress" className="flex items-center justify-center">
+            <p className="font-medium text-sm">
+                Repeat {normalizedStep} of {totalSteps}
+            </p>
+            <ol role="list" className="ml-3 flex items-center space-x-3">
+                {steps.map((num) => (
+                    <li key={num}>
+                        {num < normalizedStep ? (
+                            <span className="block size-2 lg:size-2.5 rounded-full bg-violet-950" />
+                        ) : num === normalizedStep ? (
+                            <span className="relative flex items-center justify-center">
+                <span aria-hidden="true" className="absolute flex size-5 p-px">
+                  <span className="size-full rounded-full bg-blue-700 opacity-20" />
+                </span>
+                <span aria-hidden="true" className="relative block size-2.5 rounded-full bg-violet-950" />
+              </span>
+                        ) : (
+                            <span className="block size-2 lg:size-2.5 rounded-full bg-gray-200" />
+                        )}
+                    </li>
+                ))}
+            </ol>
+        </nav>
     )
 }
 

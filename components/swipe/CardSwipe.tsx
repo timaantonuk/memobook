@@ -8,8 +8,10 @@ import { useCardStore } from "@/app/store/card-store"
 import { useCategoryStore } from "@/app/store/categories-store"
 import { updateCardInFirebase, fetchUserCards } from "@/app/utils/cardsService"
 import { useUserStore } from "@/app/store/user-store"
+import type { CardSwipeProps } from "@/types/card"
+import type { Card as CardType } from "@/types/card"
 
-export const CardSwipe: React.FC = () => {
+export const CardSwipe: React.FC<CardSwipeProps> = ({ onSwipe }) => {
     const [hasMounted, setHasMounted] = useState(false)
     const { removeCard, filteredCards, updateCard, setCards } = useCardStore()
     const { categories, selectedCategoryId } = useCategoryStore()
@@ -20,7 +22,7 @@ export const CardSwipe: React.FC = () => {
     const [error, setError] = useState<string | null>(null)
     const [hasMoreCards, setHasMoreCards] = useState(true)
     const refreshTimeoutRef = useRef<NodeJS.Timeout>()
-    const cardsToReviewRef = useRef<any[]>([])
+    const cardsToReviewRef = useRef<CardType[]>([])
 
     const x = useMotionValue(0)
     const xInput = [-100, 0, 100]
@@ -85,7 +87,7 @@ export const CardSwipe: React.FC = () => {
                     return false
                 }
             })
-            .sort((a, b) => new Date(a.nextReview!).getTime() - new Date(b.nextReview!).getTime())
+            .sort((a, b) => new Date(a.nextReview).getTime() - new Date(b.nextReview).getTime())
 
         cardsToReviewRef.current = filteredAndSortedCards
         setHasMoreCards(filteredAndSortedCards.length > 0)
@@ -160,6 +162,10 @@ export const CardSwipe: React.FC = () => {
                 updateCard(currentCard.id, updatedCard)
                 await updateCardInFirebase(currentCard.id, updatedCard)
 
+                if (onSwipe) {
+                    onSwipe(currentCard.id, direction)
+                }
+
                 const isLastCard = currentIndex === cardsToReviewRef.current.length - 1
                 if (isLastCard) {
                     await refreshCards()
@@ -231,10 +237,10 @@ export const CardSwipe: React.FC = () => {
     }
 
     return (
-        <div className="relative w-full h-[75vh] lg:h-screen rounded-3xl laptop:pt-20 flex items-center justify-center overflow-hidden">
+        <div className="relative w-full h-screen rounded-3xl laptop:pt-20 flex items-center justify-center overflow-hidden">
             <motion.div className="absolute inset-0" style={{ background }} />
             <div className="memory-card"></div>
-            <div className="absolute top-10  left-[28%] lg:left-[42%] pb-4 flex gap-5 fading-text">
+            <div className="absolute top-10 left-[42%] pb-4 flex gap-5 fading-text">
                 <Undo /> <span>Swipe card</span> <Redo />
             </div>
 
