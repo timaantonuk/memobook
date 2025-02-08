@@ -40,7 +40,7 @@ const CategoriesWithCardsInfo = () => {
                 const nextReviewDate = new Date(card.nextReview)
                 nextReviewDate.setHours(0, 0, 0, 0)
 
-                if (nextReviewDate.getTime() <= today.getTime()) {
+                if (nextReviewDate.getTime() <= today.getTime() && card.status !== "learned") {
                     reviewCounts[categoryId] = (reviewCounts[categoryId] || 0) + 1
                 }
             }
@@ -49,12 +49,24 @@ const CategoriesWithCardsInfo = () => {
         return { cardsCount: counts, reviewCount: reviewCounts }
     }, [cards])
 
+    const totalCards = useMemo(() => cards.length, [cards])
+    const totalReviewCards = useMemo(() => {
+        const today = new Date()
+        today.setHours(0, 0, 0, 0)
+        return cards.filter((card) => {
+            if (!card.nextReview || card.status === "learned") return false
+            const nextReviewDate = new Date(card.nextReview)
+            nextReviewDate.setHours(0, 0, 0, 0)
+            return nextReviewDate.getTime() <= today.getTime()
+        }).length
+    }, [cards])
+
     const handleDeleteCategory = async (categoryId: string) => {
         try {
             await deleteCategoryAndCards(categoryId, user.id)
             deleteCategory(categoryId)
         } catch (error) {
-            console.error("❌ Ошибка при удалении категории:", error)
+            console.error("❌ Error deleting category:", error)
         }
     }
 
@@ -66,24 +78,9 @@ const CategoriesWithCardsInfo = () => {
             setSelectedCategory(newCategory.id)
             setNewCategoryName("")
         } catch (error) {
-            console.error("❌ Ошибка при создании категории:", error)
+            console.error("❌ Error creating category:", error)
         }
     }
-
-    const totalCards = useMemo(() => cards.length, [cards])
-    const totalReviewCards = useMemo(() => {
-        const today = new Date()
-        today.setHours(0, 0, 0, 0)
-        return cards.filter((card) => {
-            if (!card.nextReview) return false
-            const nextReviewDate = new Date(card.nextReview)
-            nextReviewDate.setHours(0, 0, 0, 0)
-            return nextReviewDate.getTime() <= today.getTime()
-        }).length
-    }, [cards])
-
-
-
 
     return (
         <article className="w-[95%] lg:w-auto">

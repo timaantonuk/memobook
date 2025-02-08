@@ -34,7 +34,6 @@ export const useCardStore = create<CardState>()(
         selectedCategoryId: null,
         filteredCards: [],
 
-        // ✅ Устанавливаем все карточки и сразу фильтруем их
         setCards: (cards) => {
             const selectedCategoryId = get().selectedCategoryId
             const filtered = selectedCategoryId ? cards.filter((card) => card.categoryId === selectedCategoryId) : cards
@@ -45,7 +44,6 @@ export const useCardStore = create<CardState>()(
             })
         },
 
-        // ✅ Добавляем новую карточку и обновляем filteredCards
         addCard: (card) => {
             set((state) => {
                 const updatedCards = [...state.cards, card]
@@ -60,42 +58,33 @@ export const useCardStore = create<CardState>()(
             })
         },
 
-        // ✅ Обновляем карточку и пересчитываем filteredCards
         updateCard: (id, updates) => {
             set((state) => {
-                const updatedCards = state.cards.map((card) =>
-                    card.id === id ? { ...card, ...updates } : card
-                );
+                const updatedCards = state.cards.map((card) => (card.id === id ? { ...card, ...updates } : card))
+
+                const filtered = state.selectedCategoryId
+                    ? updatedCards.filter((c) => c.categoryId === state.selectedCategoryId)
+                    : updatedCards
 
                 return {
                     cards: updatedCards,
-                    filteredCards: state.selectedCategoryId
-                        ? updatedCards.filter((c) => c.categoryId === state.selectedCategoryId)
-                        : updatedCards,
-                };
-            });
-
-            setTimeout(() => {
-                set((state) => ({ cards: [...state.cards] })); // 🔥 Принудительное обновление состояния
-            }, 50);
+                    filteredCards: filtered,
+                }
+            })
         },
 
-        // ✅ Удаляем карточку
         removeCard: (id) => {
             set((state) => {
-                const updatedCards = state.cards.filter((card) => card.id !== id);
+                const updatedCards = state.cards.filter((card) => card.id !== id)
                 return {
                     cards: updatedCards,
                     filteredCards: state.selectedCategoryId
                         ? updatedCards.filter((card) => card.categoryId === state.selectedCategoryId)
-                        : updatedCards, // 🔥 Мгновенное обновление UI
-                };
-            });
+                        : updatedCards,
+                }
+            })
         },
 
-
-
-        // ✅ Удаляем все карточки из определённой категории
         removeCardsByCategory: (categoryId) => {
             set((state) => ({
                 cards: state.cards.filter((card) => card.categoryId !== categoryId),
@@ -103,27 +92,23 @@ export const useCardStore = create<CardState>()(
             }))
         },
 
-
-
-        // ✅ Устанавливаем активную категорию и обновляем фильтр
         setSelectedCategory: (categoryId) => {
-            const allCards = get().cards // Получаем все карточки
-            const filtered = categoryId ? allCards.filter((card) => card.categoryId === categoryId) : allCards // Если выбрана "All Cards", показываем все
+            const allCards = get().cards
+            const filtered = categoryId ? allCards.filter((card) => card.categoryId === categoryId) : allCards
 
-            console.log("📂 setSelectedCategory вызван с:", categoryId)
-            console.log("🃏 Все карточки перед фильтрацией:", allCards)
-            console.log("🔍 Новые filteredCards:", filtered)
+            console.log("📂 setSelectedCategory called with:", categoryId)
+            console.log("🃏 All cards before filtering:", allCards)
+            console.log("🔍 New filteredCards:", filtered)
 
             set(
                 () => ({
                     selectedCategoryId: categoryId,
-                    filteredCards: [...filtered], // ✅ Принудительно создаём новый массив
+                    filteredCards: [...filtered],
                 }),
                 false,
                 "Selected category updated",
             )
 
-            // Обновляем selectedCategoryId в categories-store
             useCategoryStore.getState().setSelectedCategory(categoryId)
         },
     })),
