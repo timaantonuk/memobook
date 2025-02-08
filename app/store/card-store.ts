@@ -1,76 +1,131 @@
-"use client";
-import { create } from "zustand";
-import { devtools } from "zustand/middleware";
+"use client"
+import { create } from "zustand"
+import { devtools } from "zustand/middleware"
+import { useCategoryStore } from "./categories-store"
 
-// Интерфейс карточки
 interface Card {
-    id: string;
-    title: string;
-    description: string;
-    categoryId: string;
-    photoUrl: string;
-    userId: string;
-    status: "learning" | "learned";
-    createdAt: string;
-    stepOfRepetition: number;
-    nextReview: string | null;
+    id: string
+    title: string
+    description: string
+    categoryId: string
+    photoUrl?: string
+    userId: string
+    createdAt: string
+    stepOfRepetition: number
+    status: "learning" | "learned"
+    nextReview: string | null
 }
 
-// Интерфейс Zustand Store
 interface CardState {
-    cards: Card[];
-    setCards: (cards: Card[] | null | undefined) => void;
-    addCard: (card: Card) => void;
-    updateCard: (id: string, updates: Partial<Card>) => void;
-    removeCard: (id: string) => void;
-    removeCardsByCategory: (categoryId: string) => void;
+    cards: Card[]
+    selectedCategoryId: string | null
+    filteredCards: Card[]
+    setCards: (cards: Card[]) => void
+    addCard: (card: Card) => void
+    setSelectedCategory: (categoryId: string | null) => void
+    updateCard: (id: string, updates: Partial<Card>) => void
+    removeCard: (id: string) => void
+    removeCardsByCategory: (categoryId: string) => void
 }
 
 export const useCardStore = create<CardState>()(
     devtools((set, get) => ({
         cards: [],
+        selectedCategoryId: null,
+        filteredCards: [],
 
-        // Устанавливаем карточки в стейт, только если это массив
+        // ✅ Устанавливаем все карточки и сразу фильтруем их
         setCards: (cards) => {
-            if (!Array.isArray(cards)) {
-                console.error("❌ Ошибка в setCards: передано не массив!", cards);
-                return;
-            }
-            set(() => ({ cards }));
+            const selectedCategoryId = get().selectedCategoryId
+            const filtered = selectedCategoryId ? cards.filter((card) => card.categoryId === selectedCategoryId) : cards
+
+            set({
+                cards,
+                filteredCards: filtered,
+            })
         },
 
+        // ✅ Добавляем новую карточку и обновляем filteredCards
         addCard: (card) => {
-            set((state) => ({
-                cards: [...state.cards, card],
-            }));
-        },
-
-        updateCard: (id: string, updates: Partial<Card>) => {
-            set((state) => ({
-                cards: state.cards.map((card) =>
-                    card.id === id ? { ...card, ...updates } : card
-                ),
-            }));
-        },
-
-        removeCard: (id: string) => {
-            set((state) => ({
-                cards: state.cards.filter((card) => card.id !== id),
-            }));
-        },
-
-        // 🔥 Удаление всех карточек по категории
-        removeCardsByCategory: (categoryId: string) => {
             set((state) => {
-                const filteredCards = state.cards.filter((card) => card.categoryId !== categoryId);
+                const updatedCards = [...state.cards, card]
+                const filtered = state.selectedCategoryId
+                    ? updatedCards.filter((c) => c.categoryId === state.selectedCategoryId)
+                    : updatedCards
 
-                if (!Array.isArray(filteredCards)) {
-                    console.error("❌ Ошибка в removeCardsByCategory: filteredCards не массив!", filteredCards);
-                    return state;
+                return {
+                    cards: updatedCards,
+                    filteredCards: filtered,
                 }
+            })
+        },
 
-                return { cards: filteredCards };
+        // ✅ Обновляем карточку и пересчитываем filteredCards
+        updateCard: (id, updates) => {
+            set((state) => {
+                const updatedCards = state.cards.map((card) =>
+                    card.id === id ? { ...card, ...updates } : card
+                );
+
+                return {
+                    cards: updatedCards,
+                    filteredCards: state.selectedCategoryId
+                        ? updatedCards.filter((c) => c.categoryId === state.selectedCategoryId)
+                        : updatedCards,
+                };
+            });
+
+            setTimeout(() => {
+                set((state) => ({ cards: [...state.cards] })); // 🔥 Принудительное обновление состояния
+            }, 50);
+        },
+
+        // ✅ Удаляем карточку
+        removeCard: (id) => {
+            set((state) => {
+                const updatedCards = state.cards.filter((card) => card.id !== id);
+                return {
+                    cards: updatedCards,
+                    filteredCards: state.selectedCategoryId
+                        ? updatedCards.filter((card) => card.categoryId === state.selectedCategoryId)
+                        : updatedCards, // 🔥 Мгновенное обновление UI
+                };
             });
         },
-    }), { name: "Card Store" })
-);
+
+
+
+        // ✅ Удаляем все карточки из определённой категории
+        removeCardsByCategory: (categoryId) => {
+            set((state) => ({
+                cards: state.cards.filter((card) => card.categoryId !== categoryId),
+                filteredCards: state.filteredCards.filter((card) => card.categoryId !== categoryId),
+            }))
+        },
+
+
+
+        // ✅ Устанавливаем активную категорию и обновляем фильтр
+        setSelectedCategory: (categoryId) => {
+            const allCards = get().cards // Получаем все карточки
+            const filtered = categoryId ? allCards.filter((card) => card.categoryId === categoryId) : allCards // Если выбрана "All Cards", показываем все
+
+            console.log("📂 setSelectedCategory вызван с:", categoryId)
+            console.log("🃏 Все карточки перед фильтрацией:", allCards)
+            console.log("🔍 Новые filteredCards:", filtered)
+
+            set(
+                () => ({
+                    selectedCategoryId: categoryId,
+                    filteredCards: [...filtered], // ✅ Принудительно создаём новый массив
+                }),
+                false,
+                "Selected category updated",
+            )
+
+            // Обновляем selectedCategoryId в categories-store
+            useCategoryStore.getState().setSelectedCategory(categoryId)
+        },
+    })),
+)
+

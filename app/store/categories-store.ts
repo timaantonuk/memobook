@@ -1,39 +1,37 @@
+"use client";
 import { create } from "zustand";
 import { devtools } from "zustand/middleware";
 
 interface Category {
     id: string;
     name: string;
+    userId: string;
 }
 
 interface CategoryState {
     categories: Category[];
-    setCategories: (newCategories: Category[]) => void;
-    addCategory: (category: Category) => void;
-    deleteCategory: (categoryId: string) => void;
+    selectedCategoryId: string | null; // 🆕 null = All Cards
+    setCategories: (categories: Category[]) => void;
+    setSelectedCategory: (categoryId: string | null) => void;
+    addCategory: (category: Category) => void; // 🆕 Новая функция
+    deleteCategory: (id: string) => void;
 }
 
 export const useCategoryStore = create<CategoryState>()(
-    devtools((set, get) => ({
+    devtools((set) => ({
         categories: [],
+        selectedCategoryId: null, // 🆕 По умолчанию "Все карточки"
 
-        setCategories: (newCategories) => {
-            console.log("🔵 Setting Categories:", newCategories);
-            set({ categories: newCategories });
-        },
-
-        addCategory: (category) => {
-            console.log("🔵 Adding Category:", category);
+        setCategories: (categories) => set({ categories }),
+        setSelectedCategory: (categoryId) => set({ selectedCategoryId: categoryId }),
+        addCategory: (category) =>
             set((state) => ({
-                categories: [...state.categories, category],
-            }));
-        },
-
-        deleteCategory: (categoryId) => {
-            console.log("🔵 Deleting Category ID:", categoryId);
-            set((state) => ({
-                categories: state.categories.filter((category) => category.id !== categoryId),
-            }));
-        },
-    }), { name: "Category Store" })
+                categories: [...state.categories, category], // 🔥 Добавляем в массив
+                selectedCategoryId: category.id, // 📌 Автоматически выбираем её
+            })),
+        deleteCategory: (id) => set((state) => ({
+            categories: state.categories.filter((category) => category.id !== id),
+            selectedCategoryId: state.selectedCategoryId === id ? null : state.selectedCategoryId, // 🛠 Если удалили активную категорию → сбрасываем
+        })),
+    }))
 );
