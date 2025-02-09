@@ -237,22 +237,26 @@ export const CardSwipe: React.FC<CardSwipeProps> = ({ onSwipe }) => {
     }
 
     return (
-        <div className="relative w-full h-screen rounded-3xl laptop:pt-20 flex items-center justify-center overflow-hidden">
-            <motion.div className="absolute inset-0" style={{ background }} />
+        <div
+            className="relative w-full h-screen rounded-3xl laptop:pt-20 flex items-center justify-center overflow-hidden">
+            <motion.div className="absolute inset-0" style={{background}}/>
             <div className="memory-card"></div>
-            <div className="absolute top-10 left-[42%] pb-4 flex gap-5 fading-text">
-                <Undo /> <span>Swipe card</span> <Redo />
+
+            <div className="absolute top-10 left-1/2 -translate-x-1/2 pb-4 fading-text">
+                <div className="animate-fading flex gap-5 justify-center">
+                    <Undo/> <span>Swipe card</span> <Redo/>
+                </div>
             </div>
 
             <motion.div
                 className="absolute flex w-full max-w-[45rem] justify-center px-4"
-                style={{ x, rotate, opacity }}
+                style={{x, rotate, opacity}}
                 drag="x"
-                dragConstraints={{ left: -1000, right: 1000 }}
+                dragConstraints={{left: -1000, right: 1000}}
                 dragElastic={0.7}
                 onDragEnd={handleDragEnd}
                 animate={animControls}
-                initial={{ x: 0, opacity: 1 }}
+                initial={{x: 0, opacity: 1}}
             >
                 <Card
                     {...currentCard}

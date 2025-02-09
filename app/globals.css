@@ -176,11 +176,8 @@ body {
   }
 }
 
-.fading-text {
-  animation-name: fading;
-  animation-duration: 1s;
-  animation-timing-function: ease-in-out;
-  animation-iteration-count: infinite;
+.animate-fading {
+  animation: fading 2s ease-in-out infinite;
 }
 
 .memory-card::before {
@@ -215,17 +212,19 @@ body {
 @keyframes fading {
   0% {
     opacity: 100%;
+
   }
   50% {
     opacity: 20%;
-    transform: translateX(10px);
+    transform: translateX(-20px);
   }
 
   75% {
-    transform: translateX(-10px);
+    transform: translateX(5px);
   }
 
   100% {
+    transform: translateX(0);
     opacity: 100%;
   }
 }
