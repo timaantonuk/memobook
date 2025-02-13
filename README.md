@@ -108,4 +108,4 @@ This system focuses your attention on what matters most, streamlining study sess
 
 ## Deployment 🚀
 
-Visit [MemoBook](https://memobook-app.vercel.app/) to start your learning journey today! 📚
+Visit [MemoBook](https://memobook-seven.vercel.app/) to start your learning journey today! 📚
