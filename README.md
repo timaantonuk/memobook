@@ -2,7 +2,7 @@
 
 ![MemoBook Preview](https://github.com/user-attachments/assets/7f7a95cc-d05b-41fe-ba19-040828e2bc5a)
 
-tion algorithm** to help users retain information efficiently. With features like user authentication, flashcard creation, swipe gestures for interactive learning, and detailed learning statistics, MemoBook provides a free and personalized way to master any subject.
+**MemoBook** is a powerful learning platform that leverages the **spaced repetition algorithm** to help users retain information efficiently. With features like user authentication, flashcard creation, swipe gestures for interactive learning, and detailed learning statistics, MemoBook provides a free and personalized way to master any subject.
 
 ---
 
